@@ -54,6 +54,12 @@ func getTemplate() (*template.Template, error) {
 			"getVersion": func() string {
 				return version.Version
 			},
+			"hasFavicon": func(rootDir string, extension string) bool {
+				// Check if a specific favicon exists
+				path := filepath.Join(rootDir, "static", "favicon."+extension)
+				_, err := os.Stat(path)
+				return err == nil
+			},
 			"hasLogo": func(rootDir string) string {
 				// Check for logo.svg
 				svgPath := filepath.Join(rootDir, "static", "logo.svg")

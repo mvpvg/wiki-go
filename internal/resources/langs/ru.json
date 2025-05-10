@@ -39,6 +39,7 @@
   "settings.users": "Пользователи",
   "settings.wiki": "Вики",
   "settings.content": "Содержание",
+  "settings.import": "Импорт",
   "settings.language": "Язык интерфейса",
   "settings.theme": "Тема",
   "settings.save_success": "Настройки успешно сохранены",
@@ -62,7 +63,10 @@
   "users.username": "Имя пользователя",
   "users.password": "Пароль",
   "users.password_help": "Оставьте пустым, чтобы сохранить текущий пароль",
-  "users.administrator": "Администратор",
+  "users.role": "Роль пользователя",
+  "users.role_admin": "Администратор",
+  "users.role_editor": "Редактор",
+  "users.role_viewer": "Просмотрщик",
   "users.add_button": "Добавить пользователя",
   "users.update_button": "Обновить пользователя",
   "users.clear_button": "Очистить",
@@ -109,6 +113,7 @@
   "login.title": "Вход",
   "login.username": "Имя пользователя",
   "login.password": "Пароль",
+  "login.keep_logged_in": "Оставаться в системе (30 дней)",
   "login.button": "Вход",
   "login.error": "Неверное имя пользователя или пароль",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Вы уверены, что хотите продолжить?",
 
   "error.admin_only": "Это действие требует прав администратора",
+  "error.permission_denied": "У вас нет прав для выполнения этого действия",
   "error.login_required": "Для доступа к этой странице требуется вход",
   "error.invalid_credentials": "Неверное имя пользователя или пароль",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Ошибка загрузки документов: {0}",
 
   "anchorpicker.search_placeholder": "Поиск заголовков...",
-  "anchorpicker.no_results": "Заголовки не найдены."
+  "anchorpicker.no_results": "Заголовки не найдены.",
+
+  "import.title": "Импорт документов",
+  "import.description": "Импорт файлов markdown из ZIP-архива. Файлы будут обработаны и сохранены в соответствующей структуре документов. Структура каталогов в ZIP (категория/подкатегория) будет сохранена в вики.",
+  "import.select_zip": "Выбрать ZIP-архив",
+  "import.zip_help": "Загрузите ZIP-файл, содержащий файлы markdown (.md) для импорта.",
+  "import.start_button": "Импортировать",
+  "import.importing": "Импортирование...",
+  "import.results_title": "Результаты импорта",
+  "import.success": "Импорт успешно завершен.",
+  "import.error": "Ошибка импорта: {0}"
 }

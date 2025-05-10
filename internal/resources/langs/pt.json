@@ -39,6 +39,7 @@
   "settings.users": "Usuários",
   "settings.wiki": "Wiki",
   "settings.content": "Conteúdo",
+  "settings.import": "Importar",
   "settings.language": "Idioma da Interface",
   "settings.theme": "Tema",
   "settings.save_success": "Configurações salvas com sucesso",
@@ -62,7 +63,10 @@
   "users.username": "Nome de usuário",
   "users.password": "Senha",
   "users.password_help": "Deixe em branco para manter a senha atual",
-  "users.administrator": "Administrador",
+  "users.role": "Função do usuário",
+  "users.role_admin": "Administrador",
+  "users.role_editor": "Editor",
+  "users.role_viewer": "Visualizador",
   "users.add_button": "Adicionar Usuário",
   "users.update_button": "Atualizar Usuário",
   "users.clear_button": "Limpar",
@@ -109,6 +113,7 @@
   "login.title": "Entrar",
   "login.username": "Nome de usuário",
   "login.password": "Senha",
+  "login.keep_logged_in": "Manter-me conectado (30 dias)",
   "login.button": "Entrar",
   "login.error": "Nome de usuário ou senha inválidos",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Tem certeza de que deseja prosseguir?",
 
   "error.admin_only": "Esta ação requer privilégios de administrador",
+  "error.permission_denied": "Você não tem permissão para realizar esta ação",
   "error.login_required": "Login necessário para acessar esta página",
   "error.invalid_credentials": "Nome de usuário ou senha inválidos",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Erro ao carregar documentos: {0}",
 
   "anchorpicker.search_placeholder": "Pesquisar títulos...",
-  "anchorpicker.no_results": "Nenhum título encontrado."
+  "anchorpicker.no_results": "Nenhum título encontrado.",
+
+  "import.title": "Importar Documentos",
+  "import.description": "Importar arquivos markdown de um arquivo ZIP. Os arquivos serão processados e armazenados na estrutura de documentos apropriada. A estrutura de diretórios no ZIP (categoria/subcategoria) será preservada na wiki.",
+  "import.select_zip": "Selecionar Arquivo ZIP",
+  "import.zip_help": "Envie um arquivo ZIP contendo arquivos markdown (.md) para importar.",
+  "import.start_button": "Importar",
+  "import.importing": "Importando...",
+  "import.results_title": "Resultados da Importação",
+  "import.success": "Importação concluída com sucesso.",
+  "import.error": "Falha na importação: {0}"
 }

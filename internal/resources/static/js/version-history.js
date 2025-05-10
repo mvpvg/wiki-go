@@ -55,6 +55,12 @@
         console.log("Closing version history dialog");
         try {
             versionHistoryDialog.classList.remove('active');
+            // Reset preview content
+            const previewElement = document.querySelector('.version-preview');
+            if (previewElement) {
+                const message = window.i18n ? window.i18n.t('history.select_version') : 'Select a version to preview';
+                previewElement.innerHTML = `<div class="empty-message">${message}</div>`;
+            }
         } catch (error) {
             console.error("Error closing version history dialog:", error);
         }

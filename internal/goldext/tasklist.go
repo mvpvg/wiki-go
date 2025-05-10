@@ -59,6 +59,9 @@ func TaskListPreprocessor(markdown string, _ string) string {
 				isChecked = true
 			}
 
+			// Pre-process task text
+			processedTaskText := processTaskTextMarkdown(taskText)
+
 			// Generate the HTML for this task list item
 			var htmlLine string
 
@@ -77,7 +80,7 @@ func TaskListPreprocessor(markdown string, _ string) string {
 
 			// Preserve the original indentation in the output to maintain list structure
 			htmlLine = indent + `<li class="task-list-item-container" style="list-style-type: none;"` + indentAttr +
-				`><span class="task-list-item">` + checkbox + ` <span class="task-text">` + taskText +
+				`><span class="task-list-item">` + checkbox + ` <span class="task-text">` + processedTaskText +
 				`</span></span></li>`
 
 			result = append(result, htmlLine)
@@ -88,4 +91,25 @@ func TaskListPreprocessor(markdown string, _ string) string {
 	}
 
 	return strings.Join(result, "\n")
+}
+
+// Process task text to handle markdown formatting
+func processTaskTextMarkdown(text string) string {
+	// Process bold text (**text** or __text__)
+	boldPattern := regexp.MustCompile(`(\*\*|__)([^*_]+)(\*\*|__)`)
+	text = boldPattern.ReplaceAllString(text, "<strong>$2</strong>")
+
+	// Process italic text (*text* or _text_)
+	italicPattern := regexp.MustCompile(`(\*|_)([^*_]+)(\*|_)`)
+	text = italicPattern.ReplaceAllString(text, "<em>$2</em>")
+
+	// Process links [text](url)
+	linkPattern := regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\)`)
+	text = linkPattern.ReplaceAllString(text, `<a href="$2">$1</a>`)
+
+	// Process inline code (`code`)
+	codePattern := regexp.MustCompile("`([^`]+)`")
+	text = codePattern.ReplaceAllString(text, "<code>$1</code>")
+
+	return text
 }

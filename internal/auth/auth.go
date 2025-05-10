@@ -13,7 +13,7 @@ import (
 // Session represents a user session
 type Session struct {
 	Username  string
-	IsAdmin   bool
+	Role      string  // User role: "admin", "editor", or "viewer"
 	CreatedAt time.Time
 }
 
@@ -33,7 +33,7 @@ func GenerateSessionToken() (string, error) {
 }
 
 // CreateSession creates a new session for the user
-func CreateSession(w http.ResponseWriter, username string, isAdmin bool, cfg *config.Config) error {
+func CreateSession(w http.ResponseWriter, username string, role string, keepLoggedIn bool, cfg *config.Config) error {
 	token, err := GenerateSessionToken()
 	if err != nil {
 		return err
@@ -42,10 +42,16 @@ func CreateSession(w http.ResponseWriter, username string, isAdmin bool, cfg *co
 	mu.Lock()
 	sessions[token] = Session{
 		Username:  username,
-		IsAdmin:   isAdmin,
+		Role:      role,
 		CreatedAt: time.Now(),
 	}
 	mu.Unlock()
+
+	// Set cookie expiration time based on keepLoggedIn flag
+	maxAge := 3600 * 24 // 24 hours by default
+	if keepLoggedIn {
+		maxAge = 3600 * 24 * 30 // 30 days for persistent login
+	}
 
 	// Set the secure HTTP-only session token cookie
 	http.SetCookie(w, &http.Cookie{
@@ -55,7 +61,7 @@ func CreateSession(w http.ResponseWriter, username string, isAdmin bool, cfg *co
 		HttpOnly: true,
 		Secure:   !cfg.Server.AllowInsecureCookies,
 		SameSite: http.SameSiteStrictMode,
-		MaxAge:   3600 * 24, // 24 hours
+		MaxAge:   maxAge,
 	})
 
 	// Set a non-HTTP-only cookie for the username to be accessible by JavaScript
@@ -66,7 +72,7 @@ func CreateSession(w http.ResponseWriter, username string, isAdmin bool, cfg *co
 		HttpOnly: false,
 		Secure:   !cfg.Server.AllowInsecureCookies,
 		SameSite: http.SameSiteStrictMode,
-		MaxAge:   3600 * 24, // 24 hours
+		MaxAge:   maxAge,
 	})
 
 	return nil
@@ -87,13 +93,8 @@ func GetSession(r *http.Request) *Session {
 		return nil
 	}
 
-	// Check if session is expired (24 hours)
-	if time.Since(session.CreatedAt) > 24*time.Hour {
-		mu.Lock()
-		delete(sessions, c.Value)
-		mu.Unlock()
-		return nil
-	}
+	// Session expiration is now handled by cookie expiration time
+	// which is set in CreateSession based on the keepLoggedIn parameter
 
 	return &session
 }
@@ -131,13 +132,15 @@ func ClearSession(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 }
 
 // ValidateCredentials validates user credentials against the config
-func ValidateCredentials(username, password string, cfg *config.Config) (bool, bool) {
+func ValidateCredentials(username, password string, cfg *config.Config) (bool, string) {
 	for _, user := range cfg.Users {
 		if user.Username == username && crypto.CheckPasswordHash(password, user.Password) {
-			return true, user.IsAdmin
+			// Use the user's role
+			role := user.Role
+			return true, role
 		}
 	}
-	return false, false
+	return false, ""
 }
 
 // CheckAuth verifies if the user is authenticated and returns their session
@@ -156,4 +159,24 @@ func RequireAuth(r *http.Request, cfg *config.Config) bool {
 	// If the wiki is private, check if the user is authenticated
 	session := GetSession(r)
 	return session != nil
+}
+
+// RequireRole checks if user has required role or higher
+func RequireRole(r *http.Request, requiredRole string) bool {
+	session := GetSession(r)
+	if session == nil {
+		return false
+	}
+
+	// Role hierarchy: admin > editor > viewer
+	switch requiredRole {
+	case "admin":
+		return session.Role == "admin"
+	case "editor":
+		return session.Role == "admin" || session.Role == "editor"
+	case "viewer":
+		return session.Role == "admin" || session.Role == "editor" || session.Role == "viewer"
+	default:
+		return false
+	}
 }

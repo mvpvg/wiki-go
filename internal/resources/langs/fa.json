@@ -39,6 +39,7 @@
   "settings.users": "کاربران",
   "settings.wiki": "ویکی",
   "settings.content": "محتوا",
+  "settings.import": "وارد کردن",
   "settings.language": "زبان رابط کاربری",
   "settings.theme": "قالب",
   "settings.save_success": "تنظیمات با موفقیت ذخیره شد",
@@ -62,7 +63,10 @@
   "users.username": "نام کاربری",
   "users.password": "رمز عبور",
   "users.password_help": "برای حفظ رمز عبور فعلی، خالی بگذارید",
-  "users.administrator": "مدیر",
+  "users.role": "نقش کاربر",
+  "users.role_admin": "مدیر",
+  "users.role_editor": "ویرایشگر",
+  "users.role_viewer": "بیننده",
   "users.add_button": "افزودن کاربر",
   "users.update_button": "به‌روزرسانی کاربر",
   "users.clear_button": "پاک کردن فرم",
@@ -109,6 +113,7 @@
   "login.title": "ورود",
   "login.username": "نام کاربری",
   "login.password": "رمز عبور",
+  "login.keep_logged_in": "مرا به خاطر بسپار (۳۰ روز)",
   "login.button": "ورود",
   "login.error": "نام کاربری یا رمز عبور نامعتبر است",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "آیا مطمئن هستید که می‌خواهید ادامه دهید؟",
 
   "error.admin_only": "این عملیات نیاز به دسترسی مدیر دارد",
+  "error.permission_denied": "شما اجازه انجام این عملیات را ندارید",
   "error.login_required": "برای دسترسی به این صفحه نیاز به ورود است",
   "error.invalid_credentials": "نام کاربری یا رمز عبور نامعتبر است",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "خطا در بارگذاری اسناد: {0}",
 
   "anchorpicker.search_placeholder": "جستجوی سرتیترها...",
-  "anchorpicker.no_results": "هیچ سرتیترى یافت نشد."
+  "anchorpicker.no_results": "هیچ سرتیترى یافت نشد.",
+
+  "import.title": "وارد کردن اسناد",
+  "import.description": "وارد کردن فایل‌های مارک‌داون از یک آرشیو ZIP. فایل‌ها پردازش شده و در ساختار سند مناسب ذخیره می‌شوند. ساختار پوشه در ZIP (دسته/زیردسته) در ویکی حفظ خواهد شد.",
+  "import.select_zip": "انتخاب آرشیو ZIP",
+  "import.zip_help": "یک فایل ZIP حاوی فایل‌های مارک‌داون (.md) برای وارد کردن آپلود کنید.",
+  "import.start_button": "وارد کردن",
+  "import.importing": "در حال وارد کردن...",
+  "import.results_title": "نتایج وارد کردن",
+  "import.success": "وارد کردن با موفقیت انجام شد.",
+  "import.error": "وارد کردن با شکست مواجه شد: {0}"
 }

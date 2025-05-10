@@ -39,6 +39,7 @@
   "settings.users": "Käyttäjät",
   "settings.wiki": "Wiki",
   "settings.content": "Sisältö",
+  "settings.import": "Tuo",
   "settings.language": "Käyttöliittymän kieli",
   "settings.theme": "Teema",
   "settings.save_success": "Asetukset tallennettu onnistuneesti",
@@ -62,7 +63,10 @@
   "users.username": "Käyttäjätunnus",
   "users.password": "Salasana",
   "users.password_help": "Jätä tyhjäksi säilyttääksesi nykyisen salasanan",
-  "users.administrator": "Järjestelmänvalvoja",
+  "users.role": "Käyttäjärooli",
+  "users.role_admin": "Järjestelmänvalvoja",
+  "users.role_editor": "Muokkaaja",
+  "users.role_viewer": "Katsoja",
   "users.add_button": "Lisää käyttäjä",
   "users.update_button": "Päivitä käyttäjä",
   "users.clear_button": "Tyhjennä",
@@ -109,6 +113,7 @@
   "login.title": "Kirjaudu sisään",
   "login.username": "Käyttäjätunnus",
   "login.password": "Salasana",
+  "login.keep_logged_in": "Pidä minut kirjautuneena (30 päivää)",
   "login.button": "Kirjaudu sisään",
   "login.error": "Virheellinen käyttäjätunnus tai salasana",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Haluatko varmasti jatkaa?",
 
   "error.admin_only": "Tämä toiminto vaatii järjestelmänvalvojan oikeudet",
+  "error.permission_denied": "Sinulla ei ole oikeuksia suorittaa tätä toimintoa",
   "error.login_required": "Kirjautuminen vaaditaan tämän sivun käyttämiseksi",
   "error.invalid_credentials": "Virheellinen käyttäjätunnus tai salasana",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Virhe ladattaessa dokumentteja: {0}",
 
   "anchorpicker.search_placeholder": "Hae otsikoita...",
-  "anchorpicker.no_results": "Otsikoita ei löytynyt."
+  "anchorpicker.no_results": "Otsikoita ei löytynyt.",
+
+  "import.title": "Tuo dokumentteja",
+  "import.description": "Tuo markdown-tiedostoja ZIP-arkistosta. Tiedostot käsitellään ja tallennetaan asianmukaiseen dokumenttirakenteeseen. ZIP-tiedoston hakemistorakenne (kategoria/alakategoria) säilytetään wikissä.",
+  "import.select_zip": "Valitse ZIP-arkisto",
+  "import.zip_help": "Lataa ZIP-tiedosto, joka sisältää tuotavia markdown-tiedostoja (.md).",
+  "import.start_button": "Tuo",
+  "import.importing": "Tuodaan...",
+  "import.results_title": "Tuonnin tulokset",
+  "import.success": "Tuonti onnistui.",
+  "import.error": "Tuonti epäonnistui: {0}"
 }

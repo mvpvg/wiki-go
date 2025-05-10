@@ -54,9 +54,9 @@ func WikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetWikiSettingsHandler handles requests to get the current wiki settings
 func GetWikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin or editor role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || (session.Role != config.RoleAdmin && session.Role != config.RoleEditor) {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -83,9 +83,9 @@ func GetWikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 // UpdateWikiSettingsHandler handles requests to update the wiki settings
 func UpdateWikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -100,7 +100,12 @@ func UpdateWikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Validate the request
 	if req.Title == "" || req.Owner == "" || req.Notice == "" || req.Timezone == "" {
-		sendJSONError(w, "All fields are required", http.StatusBadRequest, "")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "All fields are required",
+		})
 		return
 	}
 
@@ -132,7 +137,8 @@ func UpdateWikiSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Send success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "Settings updated successfully",
 	})
 }

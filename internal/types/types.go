@@ -7,6 +7,8 @@ import (
 	"wiki-go/internal/config"
 )
 
+// Role constants are now defined in the roles package
+
 // NavItem represents a navigation item (directory)
 type NavItem struct {
 	Title    string
@@ -38,6 +40,6 @@ type PageData struct {
 	Comments           []comments.Comment // Comments for the document
 	CommentsAllowed    bool               // Whether comments are allowed for this document
 	IsAuthenticated    bool               // Whether the user is authenticated
-	IsAdmin            bool               // Whether the user is an admin
+	UserRole           string             // User role: "admin", "editor", or "viewer"
 	DocPath            string             // Document path for API calls
 }

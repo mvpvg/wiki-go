@@ -39,6 +39,7 @@
   "settings.users": "Brugere",
   "settings.wiki": "Wiki",
   "settings.content": "Indhold",
+  "settings.import": "Import",
   "settings.language": "Grænsefladesprog",
   "settings.theme": "Tema",
   "settings.save_success": "Indstillinger gemt",
@@ -62,7 +63,10 @@
   "users.username": "Brugernavn",
   "users.password": "Adgangskode",
   "users.password_help": "Efterlad tom for at beholde nuværende adgangskode",
-  "users.administrator": "Administrator",
+  "users.role": "Brugerrolle",
+  "users.role_admin": "Administrator",
+  "users.role_editor": "Redaktør",
+  "users.role_viewer": "Læser",
   "users.add_button": "Tilføj bruger",
   "users.update_button": "Opdater bruger",
   "users.clear_button": "Ryd",
@@ -109,6 +113,7 @@
   "login.title": "Log ind",
   "login.username": "Brugernavn",
   "login.password": "Adgangskode",
+  "login.keep_logged_in": "Hold mig logget ind (30 dage)",
   "login.button": "Log ind",
   "login.error": "Ugyldigt brugernavn eller adgangskode",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Er du sikker på, at du vil fortsætte?",
 
   "error.admin_only": "Denne handling kræver administratorrettigheder",
+  "error.permission_denied": "Du har ikke tilladelse til at udføre denne handling",
   "error.login_required": "Login kræves for at få adgang til denne side",
   "error.invalid_credentials": "Ugyldigt brugernavn eller adgangskode",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Fejl ved indlæsning af dokumenter: {0}",
 
   "anchorpicker.search_placeholder": "Søg efter overskrifter...",
-  "anchorpicker.no_results": "Ingen overskrifter fundet."
+  "anchorpicker.no_results": "Ingen overskrifter fundet.",
+
+  "import.title": "Importer dokumenter",
+  "import.description": "Importer markdown-filer fra et ZIP-arkiv. Filer vil blive behandlet og gemt i den passende dokumentstruktur. Mappestrukturen i ZIP-filen (kategori/underkategori) vil blive bevaret i wikien.",
+  "import.select_zip": "Vælg ZIP-arkiv",
+  "import.zip_help": "Upload en ZIP-fil, der indeholder markdown (.md) filer til import.",
+  "import.start_button": "Importer",
+  "import.importing": "Importerer...",
+  "import.results_title": "Importresultater",
+  "import.success": "Import gennemført med succes.",
+  "import.error": "Import mislykkedes: {0}"
 }

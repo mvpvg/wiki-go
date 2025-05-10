@@ -148,6 +148,7 @@ mark {
 /* Hide by default, reveal on hover/focus/touch       */
 /* -------------------------------------------------- */
 .markdown-content .heading-anchor,
+.editor-preview .heading-anchor,
 .version-content .heading-anchor {
     opacity: 0;
     margin-left: 0.25em;
@@ -157,6 +158,7 @@ mark {
 }
 
 .markdown-content .heading-anchor:hover,
+.editor-preview .heading-anchor:hover,
 .version-content .heading-anchor:hover {
     text-decoration: none;
 }
@@ -168,6 +170,12 @@ mark {
 .markdown-content h4:hover  .heading-anchor,
 .markdown-content h5:hover  .heading-anchor,
 .markdown-content h6:hover  .heading-anchor,
+.editor-preview h1:hover  .heading-anchor,
+.editor-preview h2:hover  .heading-anchor,
+.editor-preview h3:hover  .heading-anchor,
+.editor-preview h4:hover  .heading-anchor,
+.editor-preview h5:hover  .heading-anchor,
+.editor-preview h6:hover  .heading-anchor,
 .version-content  h1:hover  .heading-anchor,
 .version-content  h2:hover  .heading-anchor,
 .version-content  h3:hover  .heading-anchor,

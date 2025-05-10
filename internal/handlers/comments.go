@@ -10,6 +10,7 @@ import (
 
 	"wiki-go/internal/auth"
 	"wiki-go/internal/comments"
+	"wiki-go/internal/roles"
 	"wiki-go/internal/utils"
 )
 
@@ -41,7 +42,12 @@ func AddCommentHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if user is authenticated
 	session := auth.GetSession(r)
 	if session == nil {
-		sendJSONError(w, "Authentication required", http.StatusUnauthorized, "")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Authentication required",
+		})
 		return
 	}
 
@@ -124,6 +130,17 @@ func GetCommentsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Authentication: Require login if the wiki is private
+	if !auth.RequireAuth(r, cfg) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Authentication required",
+		})
+		return
+	}
+
 	// Get the document path from the request
 	docPath := strings.TrimPrefix(r.URL.Path, "/api/comments/")
 	if docPath == "" {
@@ -165,14 +182,19 @@ func DeleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
 	if session == nil {
-		sendJSONError(w, "Authentication required", http.StatusUnauthorized, "")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Authentication required",
+		})
 		return
 	}
 
-	if !session.IsAdmin {
+	if session.Role != roles.RoleAdmin {
 		sendJSONError(w, "Admin privileges required", http.StatusForbidden, "")
 		return
 	}
@@ -201,8 +223,8 @@ func DeleteCommentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Send success response
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(CommentResponse{
-		Success: true,
-		Message: "Comment deleted successfully",
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Comment deleted successfully",
 	})
 }

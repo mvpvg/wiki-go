@@ -21,6 +21,7 @@ var AllowedFileTypes = []FileTypeConfig{
 	{Extension: "png", MimeType: "image/png", DisplayName: "PNG Image", VerifyContentType: true},
 	{Extension: "gif", MimeType: "image/gif", DisplayName: "GIF Image", VerifyContentType: true},
 	{Extension: "svg", MimeType: "image/svg+xml", DisplayName: "SVG Image", VerifyContentType: true},
+	{Extension: "webp", MimeType: "image/webp", DisplayName: "WebP Image", VerifyContentType: true},
 	{Extension: "txt", MimeType: "text/plain", DisplayName: "Text File", VerifyContentType: true},
 	{Extension: "log", MimeType: "text/plain", DisplayName: "Log File", VerifyContentType: true},
 	{Extension: "csv", MimeType: "text/plain", DisplayName: "CSV File", VerifyContentType: true},

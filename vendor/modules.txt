@@ -1,4 +1,10 @@
-# github.com/yuin/goldmark v1.7.10
+# github.com/gosimple/slug v1.15.0
+## explicit; go 1.11
+github.com/gosimple/slug
+# github.com/gosimple/unidecode v1.0.1
+## explicit; go 1.16
+github.com/gosimple/unidecode
+# github.com/yuin/goldmark v1.7.11
 ## explicit; go 1.22
 github.com/yuin/goldmark
 github.com/yuin/goldmark/ast
@@ -9,11 +15,11 @@ github.com/yuin/goldmark/renderer
 github.com/yuin/goldmark/renderer/html
 github.com/yuin/goldmark/text
 github.com/yuin/goldmark/util
-# golang.org/x/crypto v0.37.0
+# golang.org/x/crypto v0.38.0
 ## explicit; go 1.23.0
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
-# golang.org/x/text v0.24.0
+# golang.org/x/text v0.25.0
 ## explicit; go 1.23.0
 golang.org/x/text/cases
 golang.org/x/text/internal

@@ -39,6 +39,7 @@
   "settings.users": "Benutzer",
   "settings.wiki": "Wiki",
   "settings.content": "Inhalt",
+  "settings.import": "Import",
   "settings.language": "Oberflächensprache",
   "settings.theme": "Thema",
   "settings.save_success": "Einstellungen erfolgreich gespeichert",
@@ -62,7 +63,10 @@
   "users.username": "Benutzername",
   "users.password": "Passwort",
   "users.password_help": "Leer lassen, um das aktuelle Passwort beizubehalten",
-  "users.administrator": "Administrator",
+  "users.role": "Benutzerrolle",
+  "users.role_admin": "Administrator",
+  "users.role_editor": "Redakteur",
+  "users.role_viewer": "Betrachter",
   "users.add_button": "Benutzer hinzufügen",
   "users.update_button": "Benutzer aktualisieren",
   "users.clear_button": "Löschen",
@@ -109,6 +113,7 @@
   "login.title": "Anmelden",
   "login.username": "Benutzername",
   "login.password": "Passwort",
+  "login.keep_logged_in": "Angemeldet bleiben (30 Tage)",
   "login.button": "Anmelden",
   "login.error": "Ungültiger Benutzername oder Passwort",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Sind Sie sicher, dass Sie fortfahren möchten?",
 
   "error.admin_only": "Diese Aktion erfordert Administratorrechte",
+  "error.permission_denied": "Sie haben keine Berechtigung, diese Aktion auszuführen",
   "error.login_required": "Anmeldung erforderlich, um auf diese Seite zuzugreifen",
   "error.invalid_credentials": "Ungültiger Benutzername oder Passwort",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Fehler beim Laden der Dokumente: {0}",
 
   "anchorpicker.search_placeholder": "Überschriften durchsuchen...",
-  "anchorpicker.no_results": "Keine Überschriften gefunden."
+  "anchorpicker.no_results": "Keine Überschriften gefunden.",
+
+  "import.title": "Dokumente importieren",
+  "import.description": "Markdown-Dateien aus einem ZIP-Archiv importieren. Dateien werden verarbeitet und in der entsprechenden Dokumentstruktur gespeichert. Die Verzeichnisstruktur in der ZIP-Datei (Kategorie/Unterkategorie) wird im Wiki beibehalten.",
+  "import.select_zip": "ZIP-Archiv auswählen",
+  "import.zip_help": "Laden Sie eine ZIP-Datei hoch, die Markdown-Dateien (.md) zum Importieren enthält.",
+  "import.start_button": "Importieren",
+  "import.importing": "Importiere...",
+  "import.results_title": "Importergebnisse",
+  "import.success": "Import erfolgreich abgeschlossen.",
+  "import.error": "Import fehlgeschlagen: {0}"
 }

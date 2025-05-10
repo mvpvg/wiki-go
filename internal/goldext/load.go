@@ -17,7 +17,7 @@ var (
 	_ = TypographyPreprocessor
 	_ = EmojiPreprocessor
 	_ = DetailsPreprocessor
-	_ = TaskListPreprocessor
+	// _ = TaskListPreprocessor
 	_ = TocPreprocessor
 	_ = HeadingAnchorPreprocessor
 	_ = SuperscriptPreprocessor
@@ -39,7 +39,7 @@ func init() {
 	RegisterPreprocessor(VimeoPreprocessor)     // Process Vimeo video blocks
 	RegisterPreprocessor(StatsPreprocessor)     // Process stats shortcodes
 	RegisterPreprocessor(DetailsPreprocessor)   // Process details blocks
-	RegisterPreprocessor(TaskListPreprocessor)  // Process task lists before rendering
+	// RegisterPreprocessor(TaskListPreprocessor)  // Process task lists before rendering
 	RegisterPreprocessor(TocPreprocessor)       // Process table of contents markers
 	RegisterPreprocessor(HeadingAnchorPreprocessor) // Add ¶ anchors to headings
 

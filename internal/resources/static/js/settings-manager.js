@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userFormUsernameInput = document.getElementById('userFormUsername');
     const passwordInput = document.getElementById('userFormPassword');
     const passwordHelp = document.getElementById('password-help');
-    const userIsAdminCheckbox = document.getElementById('userIsAdmin');
+    const userRoleSelect = document.getElementById('userRole');
     const saveUserBtn = document.getElementById('saveUserBtn');
     const cancelUserBtn = document.getElementById('cancelUserBtn');
 
@@ -355,25 +355,47 @@ document.addEventListener('DOMContentLoaded', function() {
             .find(row => row.startsWith('session_user='))
             ?.split('=')[1];
 
-        // Sort users: admins first, then alphabetically
+        // Sort users: admins first, then editors, then viewers, then alphabetically
         users.sort((a, b) => {
-            if (a.is_admin !== b.is_admin) {
-                return b.is_admin ? 1 : -1;
+            // Get roles with fallback for backward compatibility
+            const roleA = a.role || (a.is_admin ? 'admin' : 'viewer');
+            const roleB = b.role || (b.is_admin ? 'admin' : 'viewer');
+            
+            // Define role priority (admin > editor > viewer)
+            const rolePriority = { 'admin': 0, 'editor': 1, 'viewer': 2 };
+            
+            // Sort by role priority first
+            if (rolePriority[roleA] !== rolePriority[roleB]) {
+                return rolePriority[roleA] - rolePriority[roleB];
             }
+            
+            // If same role, sort alphabetically
             return a.username.localeCompare(b.username);
         });
 
         const html = users.map(user => {
             const isCurrentUser = user.username === currentUsername;
+            // Get role with fallback for backward compatibility
+            const role = user.role || (user.is_admin ? 'admin' : 'viewer');
+            
+            // Get role display name
+            let roleDisplay = role.charAt(0).toUpperCase() + role.slice(1);
+            if (window.i18n && window.i18n.t) {
+                roleDisplay = window.i18n.t(`users.role_${role}`);
+            }
+            
+            // Set role badge class based on role
+            const roleBadgeClass = `role-badge role-${role}`;
+            
             return `
                 <div class="user-item" data-username="${user.username}">
                     <div class="user-info">
                         <span class="username">${user.username}</span>
-                        ${user.is_admin ? '<span class="admin-badge">Admin</span>' : ''}
+                        <span class="${roleBadgeClass}">${roleDisplay}</span>
                         ${isCurrentUser ? `<span class="current-user-badge">${window.i18n ? window.i18n.t('common.you') : 'You'}</span>` : ''}
                     </div>
                     <div class="user-actions">
-                        <button class="edit-user-btn" title="Edit user" data-username="${user.username}" data-is-admin="${user.is_admin}">
+                        <button class="edit-user-btn" title="Edit user" data-username="${user.username}" data-user='${JSON.stringify({role: role, is_admin: user.is_admin})}'>
                             <i class="fa fa-pencil"></i>
                         </button>
                         ${!isCurrentUser ? `
@@ -392,8 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
         usersList.querySelectorAll('.edit-user-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const username = button.getAttribute('data-username');
-                const isAdmin = button.getAttribute('data-is-admin') === 'true';
-                editUser(username, isAdmin);
+                const userData = JSON.parse(button.getAttribute('data-user'));
+                editUser(username, userData);
             });
         });
 
@@ -415,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         passwordInput.value = '';
         passwordHelp.style.display = 'none';
         passwordInput.required = true;
-        userIsAdminCheckbox.checked = false;
+        userRoleSelect.value = 'viewer'; // Default to viewer
         saveUserBtn.textContent = 'Add User';
         saveUserBtn.setAttribute('data-i18n', 'users.add_button');
 
@@ -438,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Function to set up the form for editing a user
-    function editUser(username, isAdmin) {
+    function editUser(username, user) {
         userFormMode.value = 'update';
         userFormTitle.removeAttribute('data-i18n'); // Remove data-i18n as we're using a dynamic title
         userFormTitle.textContent = `Edit User: ${username}`;
@@ -447,7 +469,14 @@ document.addEventListener('DOMContentLoaded', function() {
         passwordInput.value = '';
         passwordHelp.style.display = 'block';
         passwordInput.required = false;
-        userIsAdminCheckbox.checked = isAdmin;
+        
+        // Set the role dropdown value
+        if (user.role) {
+            userRoleSelect.value = user.role;
+        } else {
+            // For backward compatibility
+            userRoleSelect.value = user.is_admin ? 'admin' : 'viewer';
+        }
         saveUserBtn.textContent = 'Update User';
         saveUserBtn.setAttribute('data-i18n', 'users.update_button');
 
@@ -481,7 +510,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mode = userFormMode.value;
         const username = userFormUsernameInput.value.trim();
         const password = passwordInput.value;
-        const isAdmin = userIsAdminCheckbox.checked;
+        const role = userRoleSelect.value;
 
         if (!username) {
             window.DialogSystem.showMessageDialog("Form Error", "Username is required");
@@ -506,7 +535,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({
                         username,
                         password,
-                        is_admin: isAdmin
+                        role: role
                     })
                 });
             } else {
@@ -519,7 +548,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify({
                         username,
                         new_password: password || undefined,
-                        is_admin: isAdmin
+                        role: role
                     })
                 });
             }

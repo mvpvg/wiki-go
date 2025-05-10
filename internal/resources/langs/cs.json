@@ -39,6 +39,7 @@
   "settings.users": "Uživatelé",
   "settings.wiki": "Wiki",
   "settings.content": "Obsah",
+  "settings.import": "Import",
   "settings.language": "Jazyk rozhraní",
   "settings.theme": "Motiv",
   "settings.save_success": "Nastavení úspěšně uloženo",
@@ -62,7 +63,10 @@
   "users.username": "Uživatelské jméno",
   "users.password": "Heslo",
   "users.password_help": "Ponechte prázdné pro zachování aktuálního hesla",
-  "users.administrator": "Administrátor",
+  "users.role": "Role uživatele",
+  "users.role_admin": "Administrátor",
+  "users.role_editor": "Editor",
+  "users.role_viewer": "Prohlížeč",
   "users.add_button": "Přidat uživatele",
   "users.update_button": "Aktualizovat uživatele",
   "users.clear_button": "Vymazat",
@@ -109,6 +113,7 @@
   "login.title": "Přihlášení",
   "login.username": "Uživatelské jméno",
   "login.password": "Heslo",
+  "login.keep_logged_in": "Zůstat přihlášen (30 dní)",
   "login.button": "Přihlásit se",
   "login.error": "Neplatné uživatelské jméno nebo heslo",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Opravdu chcete pokračovat?",
 
   "error.admin_only": "Tato akce vyžaduje oprávnění administrátora",
+  "error.permission_denied": "Nemáte oprávnění k provedení této akce",
   "error.login_required": "Pro přístup na tuto stránku je vyžadováno přihlášení",
   "error.invalid_credentials": "Neplatné uživatelské jméno nebo heslo",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Chyba při načítání dokumentů: {0}",
 
   "anchorpicker.search_placeholder": "Hledat nadpisy...",
-  "anchorpicker.no_results": "Nenalezeny žádné nadpisy."
+  "anchorpicker.no_results": "Nenalezeny žádné nadpisy.",
+
+  "import.title": "Import dokumentů",
+  "import.description": "Import markdown souborů ze ZIP archivu. Soubory budou zpracovány a uloženy v příslušné struktuře dokumentů. Struktura adresářů v ZIP archivu (kategorie/podkategorie) bude zachována ve wiki.",
+  "import.select_zip": "Vybrat ZIP archiv",
+  "import.zip_help": "Nahrajte ZIP soubor obsahující markdown (.md) soubory k importu.",
+  "import.start_button": "Importovat",
+  "import.importing": "Importování...",
+  "import.results_title": "Výsledky importu",
+  "import.success": "Import byl úspěšně dokončen.",
+  "import.error": "Import selhal: {0}"
 }

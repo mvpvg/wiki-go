@@ -27,7 +27,7 @@
             <div class="comment-header">
               <span class="comment-author">{{.Author}}</span>
               <span class="comment-date">{{.FormattedTime}}</span>
-              {{if $.IsAdmin}}
+              {{if eq $.UserRole "admin"}}
                 <button class="delete-comment" data-id="{{.ID}}" title="{{t "comments.delete_title"}}">
                   <i class="fa fa-trash"></i>
                 </button>

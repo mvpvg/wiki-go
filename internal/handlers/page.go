@@ -58,7 +58,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	// Check if path exists
 	info, err := os.Stat(fsPath)
 	if err != nil || !info.IsDir() {
-		http.NotFound(w, r)
+		NotFoundHandler(w, r, cfg)
 		return
 	}
 
@@ -145,12 +145,16 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	var commentsList []comments.Comment
 	var commentsAllowed bool = false // Default to false
 	var isAuthenticated bool
-	var isAdmin bool
 
 	// Get authentication status - do this for ALL pages
 	session := auth.GetSession(r)
 	isAuthenticated = session != nil
-	isAdmin = isAuthenticated && session.IsAdmin
+
+	// Get user role
+	userRole := ""
+	if isAuthenticated && session != nil {
+		userRole = session.Role
+	}
 
 	// Comments are only available for documents
 	if isDocument {
@@ -190,7 +194,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 		Comments:           commentsList,
 		CommentsAllowed:    commentsAllowed,
 		IsAuthenticated:    isAuthenticated,
-		IsAdmin:            isAdmin,
+		UserRole:           userRole,
 		DocPath:            decodedPath,
 	}
 

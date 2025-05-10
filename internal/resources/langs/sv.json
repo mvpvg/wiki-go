@@ -39,6 +39,7 @@
   "settings.users": "Användare",
   "settings.wiki": "Wiki",
   "settings.content": "Innehåll",
+  "settings.import": "Importera",
   "settings.language": "Gränssnittsspråk",
   "settings.theme": "Tema",
   "settings.save_success": "Inställningar sparade",
@@ -62,7 +63,10 @@
   "users.username": "Användarnamn",
   "users.password": "Lösenord",
   "users.password_help": "Lämna tomt för att behålla nuvarande lösenord",
-  "users.administrator": "Administratör",
+  "users.role": "Användarroll",
+  "users.role_admin": "Administratör",
+  "users.role_editor": "Redaktör",
+  "users.role_viewer": "Läsare",
   "users.add_button": "Lägg till användare",
   "users.update_button": "Uppdatera användare",
   "users.clear_button": "Rensa",
@@ -109,6 +113,7 @@
   "login.title": "Logga in",
   "login.username": "Användarnamn",
   "login.password": "Lösenord",
+  "login.keep_logged_in": "Håll mig inloggad (30 dagar)",
   "login.button": "Logga in",
   "login.error": "Ogiltigt användarnamn eller lösenord",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Är du säker på att du vill fortsätta?",
 
   "error.admin_only": "Denna åtgärd kräver administratörsbehörighet",
+  "error.permission_denied": "Du har inte behörighet att utföra denna åtgärd",
   "error.login_required": "Inloggning krävs för att komma åt denna sida",
   "error.invalid_credentials": "Ogiltigt användarnamn eller lösenord",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Fel vid laddning av dokument: {0}",
 
   "anchorpicker.search_placeholder": "Sök rubriker...",
-  "anchorpicker.no_results": "Inga rubriker hittades."
+  "anchorpicker.no_results": "Inga rubriker hittades.",
+
+  "import.title": "Importera dokument",
+  "import.description": "Importera markdown-filer från ett ZIP-arkiv. Filerna kommer att bearbetas och lagras i lämplig dokumentstruktur. Katalogstrukturen i ZIP-filen (kategori/underkategori) kommer att bevaras i wikin.",
+  "import.select_zip": "Välj ZIP-arkiv",
+  "import.zip_help": "Ladda upp en ZIP-fil som innehåller markdown (.md) filer för import.",
+  "import.start_button": "Importera",
+  "import.importing": "Importerar...",
+  "import.results_title": "Importresultat",
+  "import.success": "Importen slutfördes framgångsrikt.",
+  "import.error": "Importen misslyckades: {0}"
 }

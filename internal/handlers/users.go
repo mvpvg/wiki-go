@@ -12,28 +12,28 @@ import (
 // User represents a user in the response
 type UserResponse struct {
 	Username string `json:"username"`
-	IsAdmin  bool   `json:"is_admin"`
+	Role     string `json:"role"` // "admin", "editor", or "viewer"
 }
 
 // UserCreateRequest represents the request body for creating a user
 type UserCreateRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	IsAdmin  bool   `json:"is_admin"`
+	Role     string `json:"role"` // "admin", "editor", or "viewer"
 }
 
 // UserUpdateRequest represents the request body for updating a user
 type UserUpdateRequest struct {
 	Username    string `json:"username"`
 	NewPassword string `json:"new_password,omitempty"`
-	IsAdmin     bool   `json:"is_admin"`
+	Role        string `json:"role"` // "admin", "editor", or "viewer"
 }
 
 // UsersHandler handles user management endpoints
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -54,9 +54,9 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 
 // GetUsersHandler returns a list of all users (without passwords)
 func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -64,24 +64,30 @@ func GetUsersHandler(w http.ResponseWriter, r *http.Request) {
 	// Convert users to response objects (without passwords)
 	users := make([]UserResponse, 0, len(cfg.Users))
 	for _, user := range cfg.Users {
+		role := user.Role
+		if role == "" {
+			role = config.RoleViewer // Default to viewer if role not set
+		}
+		
 		users = append(users, UserResponse{
 			Username: user.Username,
-			IsAdmin:  user.IsAdmin,
+			Role:     role,
 		})
 	}
 
 	// Send the response
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"users": users,
 	})
 }
 
 // CreateUserHandler creates a new user
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -118,11 +124,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a copy of the current config
 	updatedConfig := *cfg
 
+	// Validate role
+	if req.Role != config.RoleAdmin && req.Role != config.RoleEditor && req.Role != config.RoleViewer {
+		req.Role = config.RoleViewer // Default to viewer if invalid role
+	}
+
 	// Add the new user
 	updatedConfig.Users = append(updatedConfig.Users, config.User{
 		Username: req.Username,
 		Password: hashedPassword,
-		IsAdmin:  req.IsAdmin,
+		Role: req.Role,
 	})
 
 	// Save the updated config
@@ -138,16 +149,17 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Send success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "User created successfully",
 	})
 }
 
 // UpdateUserHandler updates an existing user
 func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -169,13 +181,17 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a copy of the current config
 	updatedConfig := *cfg
 
+	// Validate role
+	if req.Role != config.RoleAdmin && req.Role != config.RoleEditor && req.Role != config.RoleViewer {
+		req.Role = config.RoleViewer // Default to viewer if invalid role
+	}
+
 	// Find and update the user
 	userFound := false
 	for i, user := range updatedConfig.Users {
 		if user.Username == req.Username {
-			// Update the user's admin status
-			updatedConfig.Users[i].IsAdmin = req.IsAdmin
-
+			// Update the user's role
+			updatedConfig.Users[i].Role = req.Role
 			// Update password if provided
 			if req.NewPassword != "" {
 				hashedPassword, err := crypto.HashPassword(req.NewPassword)
@@ -209,16 +225,17 @@ func UpdateUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Send success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "User updated successfully",
 	})
 }
 
 // DeleteUserHandler deletes a user
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	// Check if user is authenticated and is an admin
+	// Check if user is authenticated and has admin role
 	session := auth.GetSession(r)
-	if session == nil || !session.IsAdmin {
+	if session == nil || session.Role != config.RoleAdmin {
 		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
 		return
 	}
@@ -258,7 +275,7 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Make sure we don't delete the last admin
 	adminCount := 0
 	for _, user := range updatedConfig.Users {
-		if user.IsAdmin {
+		if user.Role == config.RoleAdmin {
 			adminCount++
 		}
 	}
@@ -281,7 +298,8 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	// Send success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "User deleted successfully",
 	})
 }

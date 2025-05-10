@@ -50,7 +50,7 @@ func SubscriptPreprocessor(markdown string, _ string) string {
 		}
 
 		// Process subscript, being careful to distinguish from strikethrough
-		if strings.Contains(line, "~") && !strings.Contains(line, "~~") {
+		if strings.Contains(line, "~") {
 			// Process the line character by character to handle single tildes vs double tildes
 			var inCode bool
 			var inInlineMath bool

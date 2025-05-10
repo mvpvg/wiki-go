@@ -39,6 +39,7 @@
   "settings.users": "使用者",
   "settings.wiki": "Wiki",
   "settings.content": "內容",
+  "settings.import": "匯入",
   "settings.language": "介面語言",
   "settings.theme": "主題",
   "settings.save_success": "設定儲存成功",
@@ -62,7 +63,10 @@
   "users.username": "使用者名稱",
   "users.password": "密碼",
   "users.password_help": "留空以保持目前密碼",
-  "users.administrator": "管理員",
+  "users.role": "使用者角色",
+  "users.role_admin": "管理員",
+  "users.role_editor": "編輯者",
+  "users.role_viewer": "檢視者",
   "users.add_button": "新增使用者",
   "users.update_button": "更新使用者",
   "users.clear_button": "清除",
@@ -109,6 +113,7 @@
   "login.title": "登入",
   "login.username": "使用者名稱",
   "login.password": "密碼",
+  "login.keep_logged_in": "保持登入狀態（30天）",
   "login.button": "登入",
   "login.error": "使用者名稱或密碼無效",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "您確定要繼續嗎？",
 
   "error.admin_only": "此操作需要管理員權限",
+  "error.permission_denied": "您沒有執行此操作的權限",
   "error.login_required": "需要登入才能存取此頁面",
   "error.invalid_credentials": "使用者名稱或密碼無效",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "載入文件時發生錯誤：{0}",
 
   "anchorpicker.search_placeholder": "搜尋標題...",
-  "anchorpicker.no_results": "未找到標題。"
+  "anchorpicker.no_results": "未找到標題。",
+
+  "import.title": "匯入文件",
+  "import.description": "從ZIP封存檔匯入Markdown檔案。檔案將被處理並儲存在適當的文件結構中。ZIP中的目錄結構（類別/子類別）將在wiki中保留。",
+  "import.select_zip": "選擇ZIP封存檔",
+  "import.zip_help": "上傳包含要匯入的Markdown（.md）檔案的ZIP檔案。",
+  "import.start_button": "匯入",
+  "import.importing": "匯入中...",
+  "import.results_title": "匯入結果",
+  "import.success": "匯入成功完成。",
+  "import.error": "匯入失敗：{0}"
 }

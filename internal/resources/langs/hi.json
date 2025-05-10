@@ -39,6 +39,7 @@
   "settings.users": "उपयोगकर्ता",
   "settings.wiki": "विकी",
   "settings.content": "सामग्री",
+  "settings.import": "आयात",
   "settings.language": "इंटरफेस भाषा",
   "settings.theme": "थीम",
   "settings.save_success": "सेटिंग्स सफलतापूर्वक सहेजी गईं",
@@ -62,7 +63,10 @@
   "users.username": "उपयोगकर्ता नाम",
   "users.password": "पासवर्ड",
   "users.password_help": "वर्तमान पासवर्ड रखने के लिए खाली छोड़ दें",
-  "users.administrator": "प्रशासक",
+  "users.role": "उपयोगकर्ता भूमिका",
+  "users.role_admin": "प्रशासक",
+  "users.role_editor": "संपादक",
+  "users.role_viewer": "दर्शक",
   "users.add_button": "उपयोगकर्ता जोड़ें",
   "users.update_button": "उपयोगकर्ता अपडेट करें",
   "users.clear_button": "साफ करें",
@@ -109,6 +113,7 @@
   "login.title": "लॉगिन",
   "login.username": "उपयोगकर्ता नाम",
   "login.password": "पासवर्ड",
+  "login.keep_logged_in": "मुझे लॉग इन रखें (30 दिन)",
   "login.button": "लॉगिन",
   "login.error": "अमान्य उपयोगकर्ता नाम या पासवर्ड",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "क्या आप वाकई आगे बढ़ना चाहते हैं?",
 
   "error.admin_only": "इस क्रिया के लिए प्रशासक अधिकार आवश्यक हैं",
+  "error.permission_denied": "आपके पास यह क्रिया करने की अनुमति नहीं है",
   "error.login_required": "इस पृष्ठ तक पहुंचने के लिए लॉगिन आवश्यक है",
   "error.invalid_credentials": "अमान्य उपयोगकर्ता नाम या पासवर्ड",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "दस्तावेज़ लोड करने में त्रुटि: {0}",
 
   "anchorpicker.search_placeholder": "शीर्षक खोजें...",
-  "anchorpicker.no_results": "कोई शीर्षक नहीं मिला।"
+  "anchorpicker.no_results": "कोई शीर्षक नहीं मिला।",
+
+  "import.title": "दस्तावेज़ आयात करें",
+  "import.description": "ZIP आर्काइव से मार्कडाउन फ़ाइलें आयात करें। फ़ाइलों को संसाधित किया जाएगा और उपयुक्त दस्तावेज़ संरचना में संग्रहीत किया जाएगा। ZIP में निर्देशिका संरचना (श्रेणी/उपश्रेणी) विकी में संरक्षित रहेगी।",
+  "import.select_zip": "ZIP आर्काइव चुनें",
+  "import.zip_help": "आयात करने के लिए मार्कडाउन (.md) फ़ाइलों वाली ZIP फ़ाइल अपलोड करें।",
+  "import.start_button": "आयात करें",
+  "import.importing": "आयात हो रहा है...",
+  "import.results_title": "आयात परिणाम",
+  "import.success": "आयात सफलतापूर्वक पूरा हुआ।",
+  "import.error": "आयात विफल: {0}"
 }

@@ -39,6 +39,7 @@
   "settings.users": "Kullanıcılar",
   "settings.wiki": "Wiki",
   "settings.content": "İçerik",
+  "settings.import": "İçe Aktar",
   "settings.language": "Arayüz Dili",
   "settings.theme": "Tema",
   "settings.save_success": "Ayarlar başarıyla kaydedildi",
@@ -62,7 +63,10 @@
   "users.username": "Kullanıcı Adı",
   "users.password": "Şifre",
   "users.password_help": "Mevcut şifreyi korumak için boş bırakın",
-  "users.administrator": "Yönetici",
+  "users.role": "Kullanıcı Rolü",
+  "users.role_admin": "Yönetici",
+  "users.role_editor": "Editör",
+  "users.role_viewer": "Görüntüleyici",
   "users.add_button": "Kullanıcı Ekle",
   "users.update_button": "Kullanıcıyı Güncelle",
   "users.clear_button": "Temizle",
@@ -109,6 +113,7 @@
   "login.title": "Giriş",
   "login.username": "Kullanıcı Adı",
   "login.password": "Şifre",
+  "login.keep_logged_in": "Oturumu açık tut (30 gün)",
   "login.button": "Giriş",
   "login.error": "Geçersiz kullanıcı adı veya şifre",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Devam etmek istediğinizden emin misiniz?",
 
   "error.admin_only": "Bu işlem yönetici ayrıcalıkları gerektirir",
+  "error.permission_denied": "Bu işlemi gerçekleştirmek için izniniz yok",
   "error.login_required": "Bu sayfaya erişmek için giriş yapmalısınız",
   "error.invalid_credentials": "Geçersiz kullanıcı adı veya şifre",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Belgeler yüklenirken hata oluştu: {0}",
 
   "anchorpicker.search_placeholder": "Başlıklarda ara...",
-  "anchorpicker.no_results": "Başlık bulunamadı."
+  "anchorpicker.no_results": "Başlık bulunamadı.",
+
+  "import.title": "Belgeleri İçe Aktar",
+  "import.description": "ZIP arşivinden markdown dosyalarını içe aktarın. Dosyalar işlenecek ve uygun belge yapısında saklanacaktır. ZIP'teki dizin yapısı (kategori/alt kategori) wiki'de korunacaktır.",
+  "import.select_zip": "ZIP Arşivi Seç",
+  "import.zip_help": "İçe aktarılacak markdown (.md) dosyaları içeren bir ZIP dosyası yükleyin.",
+  "import.start_button": "İçe Aktar",
+  "import.importing": "İçe Aktarılıyor...",
+  "import.results_title": "İçe Aktarma Sonuçları",
+  "import.success": "İçe aktarma başarıyla tamamlandı.",
+  "import.error": "İçe aktarma başarısız oldu: {0}"
 }

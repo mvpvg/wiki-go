@@ -67,6 +67,14 @@ jobs:
             type=raw,value=${{ steps.get_version.outputs.VERSION_NUM }}
             type=raw,value=${{ steps.get_version.outputs.MAJOR }}
             type=raw,value=${{ steps.get_version.outputs.MAJOR }}.${{ steps.get_version.outputs.MINOR }}
+          labels: |
+            org.opencontainers.image.title=Wiki-Go
+            org.opencontainers.image.description=Fast flat-file wiki written in Go
+            org.opencontainers.image.version=${{ steps.get_version.outputs.VERSION_NUM }}
+            org.opencontainers.image.documentation=https://github.com/leomoon-studios/wiki-go#readme
+            org.opencontainers.image.authors=LeoMoon Studios <info@leomoon.com>
+            org.opencontainers.image.licenses=GPL-3.0
+            org.opencontainers.image.url=https://wikigo.leomoon.com
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2

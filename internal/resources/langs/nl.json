@@ -39,6 +39,7 @@
   "settings.users": "Gebruikers",
   "settings.wiki": "Wiki",
   "settings.content": "Inhoud",
+  "settings.import": "Importeren",
   "settings.language": "Interfacetaal",
   "settings.theme": "Thema",
   "settings.save_success": "Instellingen succesvol opgeslagen",
@@ -62,7 +63,10 @@
   "users.username": "Gebruikersnaam",
   "users.password": "Wachtwoord",
   "users.password_help": "Laat leeg om het huidige wachtwoord te behouden",
-  "users.administrator": "Beheerder",
+  "users.role": "Gebruikersrol",
+  "users.role_admin": "Beheerder",
+  "users.role_editor": "Redacteur",
+  "users.role_viewer": "Lezer",
   "users.add_button": "Gebruiker toevoegen",
   "users.update_button": "Gebruiker bijwerken",
   "users.clear_button": "Wissen",
@@ -109,6 +113,7 @@
   "login.title": "Inloggen",
   "login.username": "Gebruikersnaam",
   "login.password": "Wachtwoord",
+  "login.keep_logged_in": "Ingelogd blijven (30 dagen)",
   "login.button": "Inloggen",
   "login.error": "Ongeldige gebruikersnaam of wachtwoord",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Weet je zeker dat je wilt doorgaan?",
 
   "error.admin_only": "Voor deze actie zijn beheerdersrechten vereist",
+  "error.permission_denied": "Je hebt geen toestemming om deze actie uit te voeren",
   "error.login_required": "Inloggen vereist om deze pagina te bekijken",
   "error.invalid_credentials": "Ongeldige gebruikersnaam of wachtwoord",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Fout bij het laden van documenten: {0}",
 
   "anchorpicker.search_placeholder": "Koppen zoeken...",
-  "anchorpicker.no_results": "Geen koppen gevonden."
+  "anchorpicker.no_results": "Geen koppen gevonden.",
+
+  "import.title": "Documenten importeren",
+  "import.description": "Importeer markdown-bestanden uit een ZIP-archief. Bestanden worden verwerkt en opgeslagen in de juiste documentstructuur. De mapstructuur in de ZIP (categorie/subcategorie) blijft behouden in de wiki.",
+  "import.select_zip": "ZIP-archief selecteren",
+  "import.zip_help": "Upload een ZIP-bestand met markdown (.md) bestanden om te importeren.",
+  "import.start_button": "Importeren",
+  "import.importing": "Importeren...",
+  "import.results_title": "Importeerresultaten",
+  "import.success": "Importeren succesvol voltooid.",
+  "import.error": "Importeren mislukt: {0}"
 }

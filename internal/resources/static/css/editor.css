@@ -306,10 +306,6 @@
     color: #aaa;
 }
 
-:root[data-theme="dark"] .editor-preview a {
-    color: #6bf;
-}
-
 :root[data-theme="dark"] .editor-preview h1,
 :root[data-theme="dark"] .editor-preview h2,
 :root[data-theme="dark"] .editor-preview h3,
@@ -497,6 +493,9 @@
     margin-bottom: 0.5em;
 }
 
+.editor-preview a          { color: var(--primary-color); text-decoration: none; }
+.editor-preview a:hover    { text-decoration: underline; }
+
 /* Table picker styles */
 .table-picker {
     position: fixed;
@@ -578,8 +577,9 @@
     z-index: 1000;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     max-width: 320px;
-    max-height: 300px;
-    overflow-y: auto;
+    min-width: 260px;
+    max-height: 350px;
+    overflow-y: hidden;
     overflow-x: hidden;
     width: auto;
     box-sizing: border-box;
@@ -722,6 +722,7 @@
 .anchor-list-container {
     max-height: 240px;
     overflow-y: auto;
+    padding-bottom: 10px;
 }
 
 .anchor-list-container {

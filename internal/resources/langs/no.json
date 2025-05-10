@@ -39,6 +39,7 @@
   "settings.users": "Brukere",
   "settings.wiki": "Wiki",
   "settings.content": "Innhold",
+  "settings.import": "Importer",
   "settings.language": "Grensesnittspråk",
   "settings.theme": "Tema",
   "settings.save_success": "Innstillinger lagret",
@@ -62,7 +63,10 @@
   "users.username": "Brukernavn",
   "users.password": "Passord",
   "users.password_help": "La være tom for å beholde gjeldende passord",
-  "users.administrator": "Administrator",
+  "users.role": "Brukerrolle",
+  "users.role_admin": "Administrator",
+  "users.role_editor": "Redaktør",
+  "users.role_viewer": "Leser",
   "users.add_button": "Legg til bruker",
   "users.update_button": "Oppdater bruker",
   "users.clear_button": "Tøm",
@@ -109,6 +113,7 @@
   "login.title": "Logg inn",
   "login.username": "Brukernavn",
   "login.password": "Passord",
+  "login.keep_logged_in": "Hold meg innlogget (30 dager)",
   "login.button": "Logg inn",
   "login.error": "Ugyldig brukernavn eller passord",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Er du sikker på at du vil fortsette?",
 
   "error.admin_only": "Denne handlingen krever administratorrettigheter",
+  "error.permission_denied": "Du har ikke tillatelse til å utføre denne handlingen",
   "error.login_required": "Innlogging kreves for å få tilgang til denne siden",
   "error.invalid_credentials": "Ugyldig brukernavn eller passord",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Feil ved lasting av dokumenter: {0}",
 
   "anchorpicker.search_placeholder": "Søk etter overskrifter...",
-  "anchorpicker.no_results": "Ingen overskrifter funnet."
+  "anchorpicker.no_results": "Ingen overskrifter funnet.",
+
+  "import.title": "Importer dokumenter",
+  "import.description": "Importer markdown-filer fra et ZIP-arkiv. Filene vil bli behandlet og lagret i den passende dokumentstrukturen. Mappestrukturen i ZIP-filen (kategori/underkategori) vil bli bevart i wikien.",
+  "import.select_zip": "Velg ZIP-arkiv",
+  "import.zip_help": "Last opp en ZIP-fil som inneholder markdown (.md) filer for import.",
+  "import.start_button": "Importer",
+  "import.importing": "Importerer...",
+  "import.results_title": "Importresultater",
+  "import.success": "Import fullført.",
+  "import.error": "Import mislyktes: {0}"
 }

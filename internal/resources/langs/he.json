@@ -39,6 +39,7 @@
   "settings.users": "משתמשים",
   "settings.wiki": "ויקי",
   "settings.content": "תוכן",
+  "settings.import": "ייבוא",
   "settings.language": "שפת ממשק",
   "settings.theme": "ערכת נושא",
   "settings.save_success": "ההגדרות נשמרו בהצלחה",
@@ -62,7 +63,10 @@
   "users.username": "שם משתמש",
   "users.password": "סיסמה",
   "users.password_help": "השאר ריק כדי לשמור על הסיסמה הנוכחית",
-  "users.administrator": "מנהל",
+  "users.role": "תפקיד משתמש",
+  "users.role_admin": "מנהל",
+  "users.role_editor": "עורך",
+  "users.role_viewer": "צופה",
   "users.add_button": "הוסף משתמש",
   "users.update_button": "עדכן משתמש",
   "users.clear_button": "נקה",
@@ -109,6 +113,7 @@
   "login.title": "התחברות",
   "login.username": "שם משתמש",
   "login.password": "סיסמה",
+  "login.keep_logged_in": "השאר אותי מחובר (30 ימים)",
   "login.button": "התחברות",
   "login.error": "שם משתמש או סיסמה שגויים",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "האם אתה בטוח שברצונך להמשיך?",
 
   "error.admin_only": "פעולה זו דורשת הרשאות מנהל",
+  "error.permission_denied": "אין לך הרשאות לבצע פעולה זו",
   "error.login_required": "נדרשת התחברות כדי לגשת לדף זה",
   "error.invalid_credentials": "שם משתמש או סיסמה שגויים",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "שגיאה בטעינת מסמכים: {0}",
 
   "anchorpicker.search_placeholder": "חיפוש כותרות...",
-  "anchorpicker.no_results": "לא נמצאו כותרות."
+  "anchorpicker.no_results": "לא נמצאו כותרות.",
+
+  "import.title": "ייבוא מסמכים",
+  "import.description": "ייבוא קבצי מרקדאון מארכיון ZIP. הקבצים יעובדו ויאוחסנו במבנה המסמכים המתאים. מבנה התיקיות ב-ZIP (קטגוריה/תת-קטגוריה) יישמר בוויקי.",
+  "import.select_zip": "בחר ארכיון ZIP",
+  "import.zip_help": "העלה קובץ ZIP המכיל קבצי מרקדאון (.md) לייבוא.",
+  "import.start_button": "ייבוא",
+  "import.importing": "מייבא...",
+  "import.results_title": "תוצאות ייבוא",
+  "import.success": "הייבוא הושלם בהצלחה.",
+  "import.error": "הייבוא נכשל: {0}"
 }

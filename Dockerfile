@@ -30,7 +30,7 @@ RUN chown -R appuser:appgroup /wiki && chmod -R 755 /wiki
 
 USER appuser
 
-EXPOSE 8080
+EXPOSE 8080 443
 
 VOLUME ["/wiki/data"]
 

@@ -39,6 +39,7 @@
   "settings.users": "ユーザー",
   "settings.wiki": "ウィキ",
   "settings.content": "コンテンツ",
+  "settings.import": "インポート",
   "settings.language": "インターフェース言語",
   "settings.theme": "テーマ",
   "settings.save_success": "設定が正常に保存されました",
@@ -62,7 +63,10 @@
   "users.username": "ユーザー名",
   "users.password": "パスワード",
   "users.password_help": "現在のパスワードを維持するには空白のままにしてください",
-  "users.administrator": "管理者",
+  "users.role": "ユーザーロール",
+  "users.role_admin": "管理者",
+  "users.role_editor": "編集者",
+  "users.role_viewer": "閲覧者",
   "users.add_button": "ユーザーを追加",
   "users.update_button": "ユーザーを更新",
   "users.clear_button": "クリア",
@@ -109,6 +113,7 @@
   "login.title": "ログイン",
   "login.username": "ユーザー名",
   "login.password": "パスワード",
+  "login.keep_logged_in": "ログイン状態を保持する（30日間）",
   "login.button": "ログイン",
   "login.error": "ユーザー名またはパスワードが無効です",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "続行してもよろしいですか？",
 
   "error.admin_only": "この操作には管理者権限が必要です",
+  "error.permission_denied": "この操作を実行する権限がありません",
   "error.login_required": "このページにアクセスするにはログインが必要です",
   "error.invalid_credentials": "ユーザー名またはパスワードが無効です",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "ドキュメントの読み込み中にエラーが発生しました: {0}",
 
   "anchorpicker.search_placeholder": "見出しを検索...",
-  "anchorpicker.no_results": "見出しが見つかりませんでした。"
+  "anchorpicker.no_results": "見出しが見つかりませんでした。",
+
+  "import.title": "文書をインポート",
+  "import.description": "ZIPアーカイブからMarkdownファイルをインポートします。ファイルは処理され、適切な文書構造に保存されます。ZIP内のディレクトリ構造（カテゴリ/サブカテゴリ）はウィキ内で保持されます。",
+  "import.select_zip": "ZIPアーカイブを選択",
+  "import.zip_help": "インポートするMarkdown（.md）ファイルを含むZIPファイルをアップロードしてください。",
+  "import.start_button": "インポート",
+  "import.importing": "インポート中...",
+  "import.results_title": "インポート結果",
+  "import.success": "インポートが正常に完了しました。",
+  "import.error": "インポートに失敗しました: {0}"
 }

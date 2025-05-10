@@ -1,0 +1,16 @@
+version: '3'
+services:
+  wiki-go:
+    # Native HTTPS setup. Container listens on 443 using its own TLS.
+    # Provide valid certificate + key via volume mounts below.
+    image: leomoonstudios/wiki-go:latest
+    container_name: wiki-go-ssl
+    ports:
+      - "443:443"  # host:container
+    volumes:
+      - ./data:/wiki/data
+      - ./ssl/certificate.crt:/ssl/certificate.crt  # public cert
+      - ./ssl/private.key:/ssl/private.key          # private key
+    environment:
+      - TZ=America/Vancouver
+    restart: unless-stopped

@@ -39,6 +39,7 @@
   "settings.users": "사용자",
   "settings.wiki": "위키",
   "settings.content": "콘텐츠",
+  "settings.import": "가져오기",
   "settings.language": "인터페이스 언어",
   "settings.theme": "테마",
   "settings.save_success": "설정이 성공적으로 저장되었습니다",
@@ -62,7 +63,10 @@
   "users.username": "사용자 이름",
   "users.password": "비밀번호",
   "users.password_help": "현재 비밀번호를 유지하려면 비워 두세요",
-  "users.administrator": "관리자",
+  "users.role": "사용자 역할",
+  "users.role_admin": "관리자",
+  "users.role_editor": "편집자",
+  "users.role_viewer": "뷰어",
   "users.add_button": "사용자 추가",
   "users.update_button": "사용자 업데이트",
   "users.clear_button": "지우기",
@@ -109,6 +113,7 @@
   "login.title": "로그인",
   "login.username": "사용자 이름",
   "login.password": "비밀번호",
+  "login.keep_logged_in": "로그인 상태 유지 (30일)",
   "login.button": "로그인",
   "login.error": "잘못된 사용자 이름 또는 비밀번호",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "정말로 진행하시겠습니까?",
 
   "error.admin_only": "이 작업은 관리자 권한이 필요합니다",
+  "error.permission_denied": "이 작업을 수행할 권한이 없습니다",
   "error.login_required": "이 페이지에 접근하려면 로그인이 필요합니다",
   "error.invalid_credentials": "잘못된 사용자 이름 또는 비밀번호",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "문서 로딩 중 오류 발생: {0}",
 
   "anchorpicker.search_placeholder": "제목 검색...",
-  "anchorpicker.no_results": "제목을 찾을 수 없습니다."
+  "anchorpicker.no_results": "제목을 찾을 수 없습니다.",
+
+  "import.title": "문서 가져오기",
+  "import.description": "ZIP 아카이브에서 마크다운 파일을 가져옵니다. 파일은 처리되어 적절한 문서 구조에 저장됩니다. ZIP의 디렉토리 구조(카테고리/하위 카테고리)는 위키에서 유지됩니다.",
+  "import.select_zip": "ZIP 아카이브 선택",
+  "import.zip_help": "가져올 마크다운(.md) 파일이 포함된 ZIP 파일을 업로드하세요.",
+  "import.start_button": "가져오기",
+  "import.importing": "가져오는 중...",
+  "import.results_title": "가져오기 결과",
+  "import.success": "가져오기가 성공적으로 완료되었습니다.",
+  "import.error": "가져오기 실패: {0}"
 }

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 	"wiki-go/internal/crypto"
+	"wiki-go/internal/roles"
 
 	"gopkg.in/yaml.v3"
 )
@@ -18,8 +19,15 @@ const ConfigFilePath = "data/config.yaml"
 type User struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
-	IsAdmin  bool   `yaml:"is_admin"`
+	Role     string `yaml:"role"`     // "admin", "editor", or "viewer"
 }
+
+// Role constants - using the ones defined in roles package
+var (
+	RoleAdmin  = roles.RoleAdmin  // Can do anything
+	RoleEditor = roles.RoleEditor // Can edit documents and post comments
+	RoleViewer = roles.RoleViewer // Can only view documents and post comments
+)
 
 // Config represents the server configuration
 type Config struct {
@@ -31,6 +39,11 @@ type Config struct {
 		// where HTTPS is not available. This reduces security by allowing
 		// cookies to be transmitted in plain text.
 		AllowInsecureCookies bool `yaml:"allow_insecure_cookies"`
+		// Enable native TLS. When true, application will run over HTTPS using the
+		// supplied certificate and key paths.
+		SSL      bool   `yaml:"ssl"`
+		SSLCert  string `yaml:"ssl_cert"`
+		SSLKey   string `yaml:"ssl_key"`
 	} `yaml:"server"`
 	Wiki struct {
 		RootDir                   string `yaml:"root_dir"`
@@ -56,6 +69,9 @@ func LoadConfig(path string) (*Config, error) {
 	config.Server.Host = "0.0.0.0" // Set to localhost for local development
 	config.Server.Port = 8080
 	config.Server.AllowInsecureCookies = false // Default to secure cookies
+	config.Server.SSL = false
+	config.Server.SSLCert = ""
+	config.Server.SSLKey = ""
 	config.Wiki.RootDir = "data"
 	config.Wiki.DocumentsDir = "documents"
 	config.Wiki.Title = "📚 Wiki-Go"
@@ -90,7 +106,7 @@ func LoadConfig(path string) (*Config, error) {
 			config.Users = append(config.Users, User{
 				Username: "admin",
 				Password: hashedPassword,
-				IsAdmin:  true,
+				Role:     RoleAdmin,
 			})
 
 			// Format all users
@@ -108,6 +124,9 @@ func LoadConfig(path string) (*Config, error) {
 				config.Server.Host,
 				config.Server.Port,
 				config.Server.AllowInsecureCookies,
+				config.Server.SSL,
+				config.Server.SSLCert,
+				config.Server.SSLKey,
 				config.Wiki.RootDir,
 				config.Wiki.DocumentsDir,
 				config.Wiki.Title,
@@ -139,6 +158,8 @@ func LoadConfig(path string) (*Config, error) {
 		return nil, err
 	}
 
+	// Migrate user roles from is_admin to role - this is now done in main.go
+
 	return config, nil
 }
 
@@ -152,6 +173,11 @@ func GetConfigTemplate() string {
     # where HTTPS is not available. This reduces security by allowing
     # cookies to be transmitted in plain text.
     allow_insecure_cookies: %t
+    # Enable native TLS. When true, application will run over HTTPS using the
+    # supplied certificate and key paths.
+    ssl: %t
+    ssl_cert: %s
+    ssl_key: %s
 wiki:
     root_dir: %s
     documents_dir: %s
@@ -173,8 +199,8 @@ users:
 
 // FormatUserEntry formats a single user entry for the config file
 func FormatUserEntry(user User) string {
-	return fmt.Sprintf("    - username: %s\n      password: %s\n      is_admin: %t",
-		user.Username, user.Password, user.IsAdmin)
+	return fmt.Sprintf("    - username: %s\n      password: %s\n      role: %s",
+		user.Username, user.Password, user.Role)
 }
 
 // SaveConfig saves the configuration to a writer
@@ -194,6 +220,9 @@ func SaveConfig(cfg *Config, w io.Writer) error {
 		cfg.Server.Host,
 		cfg.Server.Port,
 		cfg.Server.AllowInsecureCookies,
+		cfg.Server.SSL,
+		cfg.Server.SSLCert,
+		cfg.Server.SSLKey,
 		cfg.Wiki.RootDir,
 		cfg.Wiki.DocumentsDir,
 		cfg.Wiki.Title,

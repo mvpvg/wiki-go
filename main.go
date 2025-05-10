@@ -7,6 +7,7 @@ import (
 
 	"wiki-go/internal/config"
 	"wiki-go/internal/handlers"
+	"wiki-go/internal/migration"
 	"wiki-go/internal/routes"
 	"wiki-go/internal/static"
 
@@ -15,7 +16,12 @@ import (
 )
 
 func main() {
-	// Load configuration
+	// Migrate user roles from old IsAdmin to new role-based system
+	if err := migration.MigrateUserRoles(config.ConfigFilePath); err != nil {
+		log.Fatal("Error migrating user roles:", err)
+	}
+
+	// Load configuration (after migration)
 	cfg, err := config.LoadConfig(config.ConfigFilePath)
 	if err != nil {
 		log.Fatal("Error loading config:", err)
@@ -39,8 +45,15 @@ func main() {
 
 	// Start the server
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
-	fmt.Printf("Server starting on %s...\n", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatal(err)
+	if cfg.Server.SSL && cfg.Server.SSLCert != "" && cfg.Server.SSLKey != "" {
+		fmt.Printf("HTTPS server starting on %s...\n", addr)
+		if err := http.ListenAndServeTLS(addr, cfg.Server.SSLCert, cfg.Server.SSLKey, nil); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Printf("HTTP server starting on %s...\n", addr)
+		if err := http.ListenAndServe(addr, nil); err != nil {
+			log.Fatal(err)
+		}
 	}
 }

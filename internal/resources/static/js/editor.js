@@ -64,44 +64,31 @@ const EmojiCache = {
 };
 
 // Helper functions for editor toolbar actions
-function addSubscript(cm) {
-    var selection = cm.getSelection();
+function wrapText(cm, prefix = '', suffix = '', placeholder = '') {
+    const selection = cm.getSelection();
     if (selection) {
-        cm.replaceSelection("~" + selection + "~");
+        cm.replaceSelection(`${prefix}${selection}${suffix}`);
     } else {
-        var cursor = cm.getCursor();
-        cm.replaceRange("~~", cursor);
-        cm.setCursor(cursor.line, cursor.ch + 1);
+        const cursor = cm.getCursor();
+        cm.replaceRange(prefix + placeholder + suffix, cursor);
+        // Place cursor between prefix and suffix so the user can start typing.
+        cm.setCursor(cursor.line, cursor.ch + prefix.length);
     }
-    // Ensure editor retains focus
+    // Ensure the editor keeps focus.
     cm.focus();
 }
 
 // Function to add highlight markup
 function addHighlight(cm) {
-    var selection = cm.getSelection();
-    if (selection) {
-        cm.replaceSelection("==" + selection + "==");
-    } else {
-        var cursor = cm.getCursor();
-        cm.replaceRange("====", cursor);
-        cm.setCursor(cursor.line, cursor.ch + 2);
-    }
-    // Ensure editor retains focus
-    cm.focus();
+    wrapText(cm, '==', '==');
 }
 
 function addSuperscript(cm) {
-    var selection = cm.getSelection();
-    if (selection) {
-        cm.replaceSelection("^" + selection + "^");
-    } else {
-        var cursor = cm.getCursor();
-        cm.replaceRange("^^", cursor);
-        cm.setCursor(cursor.line, cursor.ch + 1);
-    }
-    // Ensure editor retains focus
-    cm.focus();
+    wrapText(cm, '^', '^');
+}
+
+function addSubscript(cm) {
+    wrapText(cm, '~', '~');
 }
 
 function addRecentEdits(cm) {
@@ -189,41 +176,16 @@ function createEmojiPicker() {
 
 // Function to show emoji picker
 function showEmojiPicker(button) {
-    if (!emojiPickerElement) {
-        // Start preloading emoji data if not already loaded
-        EmojiCache.getData();
-        // Create the picker
-        emojiPickerElement = createEmojiPicker();
-    }
+    // Preload emoji data to reduce latency
+    EmojiCache.getData();
 
-    // Toggle visibility
-    if (emojiPickerElement.style.display === 'block') {
-        hideEmojiPicker();
-        return;
-    }
-
-    // In showEmojiPicker, ensure picker is made visible before measuring
-    emojiPickerElement.style.display = 'block';
-    // Defer positioning to next frame so layout calculations are correct
-    requestAnimationFrame(() => {
-        positionPicker(emojiPickerElement, button);
-        // Safeguard: run again after fonts/images render
-        setTimeout(() => positionPicker(emojiPickerElement, button), 50);
+    togglePicker({
+        get: () => emojiPickerElement,
+        set: (el) => { emojiPickerElement = el; },
+        create: createEmojiPicker,
+        button,
+        closeSelector: '.emoji-button'
     });
-
-    // Add a one-time event listener to close when clicking outside
-    const closeHandler = function(e) {
-        if (!emojiPickerElement.contains(e.target) &&
-            !e.target.closest('.emoji-button')) {
-            hideEmojiPicker();
-            document.removeEventListener('click', closeHandler);
-        }
-    };
-
-    // Use setTimeout to avoid the current click event from immediately closing
-    setTimeout(() => {
-        document.addEventListener('click', closeHandler);
-    }, 0);
 }
 
 // Function to hide emoji picker
@@ -303,7 +265,7 @@ function createDocPicker() {
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.className = 'doc-search-input';
-    searchInput.placeholder = window.i18n.t('docpicker.search_placeholder');
+    searchInput.placeholder = window.i18n ? window.i18n.t('docpicker.search_placeholder') : 'Search…';
     searchInput.style.boxSizing = 'border-box';
     searchInput.style.width = '100%';
 
@@ -319,7 +281,7 @@ function createDocPicker() {
     // Create a loading message
     const loadingMsg = document.createElement('div');
     loadingMsg.className = 'docs-loading';
-    loadingMsg.textContent = window.i18n.t('docpicker.loading');
+    loadingMsg.textContent = window.i18n ? window.i18n.t('docpicker.loading') : 'Loading...';
 
     // Add both to the picker
     picker.appendChild(loadingMsg);
@@ -327,10 +289,10 @@ function createDocPicker() {
     document.body.appendChild(picker);
     docPickerElement = picker;
 
-    // Check if user is admin before trying to fetch documents
-    window.Auth.checkIfUserIsAdmin().then(isAdmin => {
-        if (!isAdmin) {
-            loadingMsg.textContent = window.i18n.t('docpicker.admin_required');
+    // Check if user has editor or admin role before trying to fetch documents
+    window.Auth.checkUserRole('editor').then(canEdit => {
+        if (!canEdit) {
+            loadingMsg.textContent = window.i18n ? window.i18n.t('docpicker.admin_required') : 'Editor or admin required';
             return;
         }
 
@@ -357,7 +319,7 @@ function createDocPicker() {
                 if (filteredDocs.length === 0) {
                     const noResults = document.createElement('div');
                     noResults.className = 'no-results';
-                    noResults.textContent = window.i18n.t('docpicker.no_results');
+                    noResults.textContent = window.i18n ? window.i18n.t('docpicker.no_results') : 'No results found';
                     docsContainer.appendChild(noResults);
                     return;
                 }
@@ -381,7 +343,7 @@ function createDocPicker() {
             });
         }).catch(error => {
             // Show error message
-            loadingMsg.textContent = window.i18n.t('docpicker.error_loading').replace('{0}', error.message || 'Access denied');
+            loadingMsg.textContent = window.i18n ? window.i18n.t('docpicker.error_loading').replace('{0}', error.message || 'Access denied') : 'Error loading documents';
         });
     });
 
@@ -390,46 +352,19 @@ function createDocPicker() {
 
 // Function to show document picker
 function showDocPicker(button) {
-    if (!docPickerElement) {
-        // Create the picker
-        docPickerElement = createDocPicker();
-    }
-
-    // Toggle visibility
-    if (docPickerElement.style.display === 'block') {
-        hideDocPicker();
-        return;
-    }
-
-    // In showDocPicker, ensure picker is visible before measuring
-    docPickerElement.style.display = 'block';
-    // Defer positioning
-    requestAnimationFrame(() => {
-        positionPicker(docPickerElement, button);
-        setTimeout(() => positionPicker(docPickerElement, button), 50);
+    togglePicker({
+        get: () => docPickerElement,
+        set: (el) => { docPickerElement = el; },
+        create: createDocPicker,
+        button,
+        closeSelector: '.doc-link-button',
+        onShow: (picker) => {
+            const searchInput = picker.querySelector('.doc-search-input');
+            if (searchInput) {
+                setTimeout(() => searchInput.focus(), 50);
+            }
+        }
     });
-
-    // Focus search input
-    setTimeout(() => {
-        const searchInput = docPickerElement.querySelector('.doc-search-input');
-        if (searchInput) {
-            searchInput.focus();
-        }
-    }, 50);
-
-    // Add a one-time event listener to close when clicking outside
-    const closeHandler = function(e) {
-        if (!docPickerElement.contains(e.target) &&
-            !e.target.closest('.doc-link-button')) {
-            hideDocPicker();
-            document.removeEventListener('click', closeHandler);
-        }
-    };
-
-    // Use setTimeout to avoid the current click event from immediately closing
-    setTimeout(() => {
-        document.addEventListener('click', closeHandler);
-    }, 0);
 }
 
 // Function to hide document picker
@@ -500,36 +435,13 @@ function insertTable(rows, cols) {
 }
 
 function showTablePicker(button) {
-    if (!tablePickerElement) {
-        tablePickerElement = createTablePicker();
-    }
-
-    // Toggle visibility
-    if (tablePickerElement.style.display === 'block') {
-        tablePickerElement.style.display = 'none';
-        return;
-    }
-
-    // In showTablePicker, ensure picker is visible before measuring
-    tablePickerElement.style.display = 'block';
-    requestAnimationFrame(() => {
-        positionPicker(tablePickerElement, button);
-        setTimeout(() => positionPicker(tablePickerElement, button), 50);
+    togglePicker({
+        get: () => tablePickerElement,
+        set: (el) => { tablePickerElement = el; },
+        create: createTablePicker,
+        button,
+        closeSelector: '.table-button'
     });
-
-    // Add a one-time event listener to close when clicking outside
-    const closeHandler = function(e) {
-        if (!tablePickerElement.contains(e.target) &&
-            !e.target.closest('.table-button')) {
-            tablePickerElement.style.display = 'none';
-            document.removeEventListener('click', closeHandler);
-        }
-    };
-
-    // Use setTimeout to avoid the current click event from immediately closing
-    setTimeout(() => {
-        document.addEventListener('click', closeHandler);
-    }, 0);
 }
 
 // Create custom toolbar
@@ -581,6 +493,7 @@ function createToolbar(container) {
                 btn.id = button.id;
             }
             btn.className = `toolbar-button ${button.action}-button`;
+            btn.dataset.action = button.action;
             btn.title = button.title;
 
             const icon = document.createElement('i');
@@ -599,250 +512,187 @@ function createToolbar(container) {
 function setupToolbarActions(toolbar) {
     if (!editor || !toolbar) return;
 
-    // Bold
-    toolbar.querySelector('.bold-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            editor.replaceSelection(`**${selection}**`);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("****", cursor);
-            editor.setCursor(cursor.line, cursor.ch + 2);
-        }
-        editor.focus();
-    });
+    if (toolbar._delegateSetup) return; // Prevent double-initialisation
 
-    // Italic
-    toolbar.querySelector('.italic-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            editor.replaceSelection(`*${selection}*`);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("**", cursor);
-            editor.setCursor(cursor.line, cursor.ch + 1);
-        }
-        editor.focus();
-    });
+    // Executes the requested action.
+    const exec = (action, button) => {
+        switch (action) {
+            case 'bold':
+                wrapText(editor, '**', '**');
+                break;
+            case 'italic':
+                wrapText(editor, '*', '*');
+                break;
+            case 'strikethrough':
+                wrapText(editor, '~~', '~~');
+                break;
+            case 'highlight':
+                addHighlight(editor);
+                break;
+            case 'subscript':
+                addSubscript(editor);
+                break;
+            case 'superscript':
+                addSuperscript(editor);
+                break;
+            case 'heading': {
+                const cursor = editor.getCursor();
+                const line = editor.getLine(cursor.line);
+                const headingMatch = line.match(/^(#+)\s/);
 
-    // Strikethrough
-    toolbar.querySelector('.strikethrough-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            editor.replaceSelection(`~~${selection}~~`);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("~~~~", cursor);
-            editor.setCursor(cursor.line, cursor.ch + 2);
-        }
-        editor.focus();
-    });
+                if (headingMatch) {
+                    const prefix = headingMatch[1];
+                    const contentStart = prefix.length + 1; // +1 for space
+                    const content = line.substring(contentStart);
 
-    // Heading - improved to properly cycle through h1-h6
-    toolbar.querySelector('.heading-button').addEventListener('click', () => {
-        const cursor = editor.getCursor();
-        const line = editor.getLine(cursor.line);
-        const headingMatch = line.match(/^(#+)\s/);
-
-        if (headingMatch) {
-            const prefix = headingMatch[1];
-            const contentStart = prefix.length + 1; // +1 for the space
-            const content = line.substring(contentStart);
-
-            if (prefix.length < 6) {
-                // Increase heading level (add one #)
-                editor.replaceRange('#' + prefix + ' ' + content,
-                    { line: cursor.line, ch: 0 },
-                    { line: cursor.line, ch: line.length });
-            } else {
-                // Reset to paragraph (remove all #)
-                editor.replaceRange(content,
-                    { line: cursor.line, ch: 0 },
-                    { line: cursor.line, ch: line.length });
+                    if (prefix.length < 6) {
+                        editor.replaceRange('#' + prefix + ' ' + content,
+                            { line: cursor.line, ch: 0 },
+                            { line: cursor.line, ch: line.length });
+                    } else {
+                        editor.replaceRange(content,
+                            { line: cursor.line, ch: 0 },
+                            { line: cursor.line, ch: line.length });
+                    }
+                } else {
+                    editor.replaceRange('# ' + line,
+                        { line: cursor.line, ch: 0 },
+                        { line: cursor.line, ch: line.length });
+                }
+                editor.focus();
+                break;
             }
-        } else {
-            // Add new h1
-            editor.replaceRange('# ' + line,
-                { line: cursor.line, ch: 0 },
-                { line: cursor.line, ch: line.length });
-        }
-        editor.focus();
-    });
-
-    // Code
-    toolbar.querySelector('.code-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            if (selection.indexOf('\n') !== -1) {
-                // Multiline code block
-                editor.replaceSelection("```\n" + selection + "\n```");
-            } else {
-                // Inline code
-                editor.replaceSelection("`" + selection + "`");
+            case 'code': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    if (sel.indexOf('\n') !== -1) {
+                        editor.replaceSelection("```\n" + sel + "\n```");
+                    } else {
+                        editor.replaceSelection("`" + sel + "`");
+                    }
+                } else {
+                    const cursor = editor.getCursor();
+                    editor.replaceRange("``", cursor);
+                    editor.setCursor(cursor.line, cursor.ch + 1);
+                }
+                editor.focus();
+                break;
             }
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("``", cursor);
-            editor.setCursor(cursor.line, cursor.ch + 1);
+            case 'quote': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    const lines = sel.split('\n');
+                    editor.replaceSelection(lines.map(l => `> ${l}`).join('\n'));
+                } else {
+                    const cursor = editor.getCursor();
+                    editor.replaceRange('> ', cursor);
+                }
+                editor.focus();
+                break;
+            }
+            case 'unordered-list': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    const lines = sel.split('\n');
+                    editor.replaceSelection(lines.map(l => `- ${l}`).join('\n'));
+                } else {
+                    const cursor = editor.getCursor();
+                    editor.replaceRange('- ', cursor);
+                }
+                editor.focus();
+                break;
+            }
+            case 'ordered-list': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    const lines = sel.split('\n');
+                    editor.replaceSelection(lines.map((l, i) => `${i + 1}. ${l}`).join('\n'));
+                } else {
+                    const cursor = editor.getCursor();
+                    editor.replaceRange('1. ', cursor);
+                }
+                editor.focus();
+                break;
+            }
+            case 'link': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    wrapText(editor, '[', '](url)');
+                    const cursor = editor.getCursor();
+                    editor.setCursor(cursor.line, cursor.ch - 1);
+                } else {
+                    const start = editor.getCursor();
+                    wrapText(editor, '[', '](url)', 'text');
+                    editor.setSelection({ line: start.line, ch: start.ch + 1 },
+                                       { line: start.line, ch: start.ch + 5 });
+                }
+                break;
+            }
+            case 'image': {
+                const sel = editor.getSelection();
+                if (sel) {
+                    wrapText(editor, '![' , '](url)');
+                    const cursor = editor.getCursor();
+                    editor.setCursor(cursor.line, cursor.ch - 1);
+                } else {
+                    const start = editor.getCursor();
+                    wrapText(editor, '![' , '](url)', 'alt text');
+                    editor.setSelection({ line: start.line, ch: start.ch + 2 },
+                                       { line: start.line, ch: start.ch + 10 });
+                }
+                break;
+            }
+            case 'table':
+                showTablePicker(button);
+                break;
+            case 'horizontal-rule': {
+                const cursor = editor.getCursor();
+                editor.replaceRange('\n---\n', cursor);
+                editor.focus();
+                break;
+            }
+            case 'recent-edits':
+                addRecentEdits(editor);
+                break;
+            case 'total':
+                addTotal(editor);
+                break;
+            case 'undo':
+                editor.undo();
+                editor.focus();
+                break;
+            case 'redo':
+                editor.redo();
+                editor.focus();
+                break;
+            case 'preview':
+                togglePreview();
+                break;
+            case 'emoji':
+                showEmojiPicker(button);
+                break;
+            case 'doc-link':
+                showDocPicker(button);
+                break;
+            case 'anchor-link':
+                showAnchorPicker(button);
+                break;
+            default:
+                break;
         }
-        editor.focus();
+    };
+
+    toolbar.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        const action = btn.dataset.action;
+        if (action) exec(action, btn);
     });
 
-    // Quote
-    toolbar.querySelector('.quote-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            const lines = selection.split('\n');
-            const quotedLines = lines.map(line => `> ${line}`).join('\n');
-            editor.replaceSelection(quotedLines);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("> ", cursor);
-        }
-        editor.focus();
-    });
+    toolbar._delegateSetup = true;
 
-    // Unordered List
-    toolbar.querySelector('.unordered-list-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            const lines = selection.split('\n');
-            const listItems = lines.map(line => `- ${line}`).join('\n');
-            editor.replaceSelection(listItems);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("- ", cursor);
-        }
-        editor.focus();
-    });
-
-    // Ordered List
-    toolbar.querySelector('.ordered-list-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            const lines = selection.split('\n');
-            const listItems = lines.map((line, index) => `${index + 1}. ${line}`).join('\n');
-            editor.replaceSelection(listItems);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("1. ", cursor);
-        }
-        editor.focus();
-    });
-
-    // Link
-    toolbar.querySelector('.link-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            editor.replaceSelection(`[${selection}](url)`);
-            // Position cursor on the url for easy editing
-            const cursor = editor.getCursor();
-            editor.setCursor(cursor.line, cursor.ch - 1);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("[text](url)", cursor);
-            editor.setSelection(
-                { line: cursor.line, ch: cursor.ch + 1 },
-                { line: cursor.line, ch: cursor.ch + 5 }
-            );
-        }
-        editor.focus();
-    });
-
-    // Image
-    toolbar.querySelector('.image-button').addEventListener('click', () => {
-        const selection = editor.getSelection();
-        if (selection) {
-            editor.replaceSelection(`![${selection}](url)`);
-            // Position cursor on the url for easy editing
-            const cursor = editor.getCursor();
-            editor.setCursor(cursor.line, cursor.ch - 1);
-        } else {
-            const cursor = editor.getCursor();
-            editor.replaceRange("![alt text](url)", cursor);
-            editor.setSelection(
-                { line: cursor.line, ch: cursor.ch + 2 },
-                { line: cursor.line, ch: cursor.ch + 10 }
-            );
-        }
-        editor.focus();
-    });
-
-    // Table
-    toolbar.querySelector('.table-button').addEventListener('click', (e) => {
-        showTablePicker(e.currentTarget);
-        // Focus will be managed after table insertion
-    });
-
-    // Horizontal Rule
-    toolbar.querySelector('.horizontal-rule-button').addEventListener('click', () => {
-        const cursor = editor.getCursor();
-        editor.replaceRange("\n---\n", cursor);
-        editor.focus();
-    });
-
-    // Subscript
-    toolbar.querySelector('.subscript-button').addEventListener('click', () => {
-        addSubscript(editor);
-        editor.focus();
-    });
-
-    // Superscript
-    toolbar.querySelector('.superscript-button').addEventListener('click', () => {
-        addSuperscript(editor);
-        editor.focus();
-    });
-
-    // Recent Edits
-    toolbar.querySelector('.recent-edits-button').addEventListener('click', () => {
-        addRecentEdits(editor);
-        editor.focus();
-    });
-
-    // Total
-    toolbar.querySelector('.total-button').addEventListener('click', () => {
-        addTotal(editor);
-        editor.focus();
-    });
-
-    // Undo
-    toolbar.querySelector('.undo-button').addEventListener('click', () => {
-        editor.undo();
-        editor.focus();
-    });
-
-    // Redo
-    toolbar.querySelector('.redo-button').addEventListener('click', () => {
-        editor.redo();
-        editor.focus();
-    });
-
-    // Toggle Preview
-    toolbar.querySelector('.preview-button').addEventListener('click', () => {
-        togglePreview();
-        // Focus is managed by the togglePreview function
-    });
-
-    // Highlight
-    toolbar.querySelector('.highlight-button').addEventListener('click', () => {
-        addHighlight(editor);
-        editor.focus();
-    });
-
-    // Emoji button
-    toolbar.querySelector('.emoji-button').addEventListener('click', (e) => {
-        showEmojiPicker(e.currentTarget);
-    });
-
-    // Document link button
-    toolbar.querySelector('.doc-link-button').addEventListener('click', (e) => {
-        showDocPicker(e.currentTarget);
-    });
-
-    // Anchor link button
-    toolbar.querySelector('.anchor-link-button').addEventListener('click', (e) => {
-        showAnchorPicker(e.currentTarget);
-    });
+    // Return here so the old individual listeners below will never execute
+    return;
 }
 
 // Function to create statusbar
@@ -1099,7 +949,7 @@ async function loadEditor(mainContent, editorContainer, viewToolbar, editToolbar
             // Apply custom styling to tone down the syntax highlighting colors
             const editorElement = document.querySelector('.CodeMirror');
             if (editorElement) {
-                applyCustomColors();
+                updateCodeMirrorTheme(isDarkMode ? 'dark' : 'light');
             }
 
             // Set editor height
@@ -1295,26 +1145,26 @@ function initializeEditControls() {
                 if (authResponse.status === 401) {
                     // Show login dialog
                     window.Auth.showLoginDialog(() => {
-                        // After login, check if admin
-                        window.Auth.checkIfUserIsAdmin().then(isAdmin => {
-                            if (isAdmin) {
+                        // After login, check if user has editor or admin role
+                        window.Auth.checkUserRole('editor').then(canEdit => {
+                            if (canEdit) {
                                 loadEditor(mainContent, editorContainer, viewToolbar, editToolbar);
                                 // Update toolbar buttons after login
                                 window.Auth.updateToolbarButtons();
                             } else {
-                                window.Auth.showAdminOnlyError();
+                                window.Auth.showPermissionError('editor');
                             }
                         });
                     });
                     return;
                 }
 
-                // User is authenticated, check if admin
-                const isAdmin = await window.Auth.checkIfUserIsAdmin();
-                if (isAdmin) {
+                // User is authenticated, check if user has editor or admin role
+                const canEdit = await window.Auth.checkUserRole('editor');
+                if (canEdit) {
                     loadEditor(mainContent, editorContainer, viewToolbar, editToolbar);
                 } else {
-                    window.Auth.showAdminOnlyError();
+                    window.Auth.showPermissionError('editor');
                 }
             } catch (error) {
                 console.error('Error:', error);
@@ -1359,95 +1209,26 @@ function initializeEditControls() {
     }
 }
 
-// Function to apply custom colors based on current theme
-function applyCustomColors() {
-    const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-
-    // Remove existing custom colors if present
-    const existingStyles = document.getElementById('custom-codemirror-colors');
-    if (existingStyles) {
-        existingStyles.remove();
-    }
-
-    // Create new style element
-    const style = document.createElement('style');
-    style.id = 'custom-codemirror-colors';
-
-    if (isDarkMode) {
-        // Dark mode - more subdued colors
-        style.textContent = `
-            .cm-s-default .cm-header { color: #81a2be; font-weight: 600; }
-            .cm-s-default .cm-header-1 { color: #a1c2de; }
-            .cm-s-default .cm-header-2 { color: #91b2ce; }
-            .cm-s-default .cm-header-3 { color: #81a2be; }
-            .cm-s-default .cm-header-4 { color: #7192ae; }
-            .cm-s-default .cm-header-5 { color: #61829e; }
-            .cm-s-default .cm-header-6 { color: #51728e; }
-            .cm-s-default .cm-quote { color: #7c7c7c; }
-            .cm-s-default .cm-keyword { color: #9a9a9a; }
-            .cm-s-default .cm-atom { color: #9a9a9a; }
-            .cm-s-default .cm-number { color: #9a9a9a; }
-            .cm-s-default .cm-def { color: #9a9a9a; }
-            .cm-s-default .cm-variable { color: #ccc; }
-            .cm-s-default .cm-variable-2 { color: #b0b0b0; }
-            .cm-s-default .cm-variable-3 { color: #b0b0b0; }
-            .cm-s-default .cm-property { color: #ccc; }
-            .cm-s-default .cm-operator { color: #ccc; }
-            .cm-s-default .cm-comment { color: #707070; }
-            .cm-s-default .cm-string { color: #999; }
-            .cm-s-default .cm-string-2 { color: #999; }
-            .cm-s-default .cm-meta { color: #9a9a9a; }
-            .cm-s-default .cm-qualifier { color: #9a9a9a; }
-            .cm-s-default .cm-builtin { color: #9a9a9a; }
-            .cm-s-default .cm-bracket { color: #9a9a9a; }
-            .cm-s-default .cm-tag { color: #9a9a9a; }
-            .cm-s-default .cm-attribute { color: #9a9a9a; }
-            .cm-s-default .cm-hr { color: #9a9a9a; }
-            .cm-s-default .cm-link { color: #9a9a9a; }
-            .cm-s-default .cm-error { color: #999; }
-        `;
-    } else {
-        // Light mode - more subdued colors
-        style.textContent = `
-            .cm-s-default .cm-header { color: #555; font-weight: 600; }
-            .cm-s-default .cm-header-1 { color: #333; }
-            .cm-s-default .cm-header-2 { color: #383838; }
-            .cm-s-default .cm-header-3 { color: #444; }
-            .cm-s-default .cm-header-4 { color: #484848; }
-            .cm-s-default .cm-header-5 { color: #505050; }
-            .cm-s-default .cm-header-6 { color: #555; }
-            .cm-s-default .cm-quote { color: #777; }
-            .cm-s-default .cm-keyword { color: #666; }
-            .cm-s-default .cm-atom { color: #666; }
-            .cm-s-default .cm-number { color: #666; }
-            .cm-s-default .cm-def { color: #666; }
-            .cm-s-default .cm-variable { color: #444; }
-            .cm-s-default .cm-variable-2 { color: #555; }
-            .cm-s-default .cm-variable-3 { color: #555; }
-            .cm-s-default .cm-property { color: #333; }
-            .cm-s-default .cm-operator { color: #333; }
-            .cm-s-default .cm-comment { color: #777; }
-            .cm-s-default .cm-string { color: #666; }
-            .cm-s-default .cm-string-2 { color: #666; }
-            .cm-s-default .cm-meta { color: #555; }
-            .cm-s-default .cm-qualifier { color: #555; }
-            .cm-s-default .cm-builtin { color: #555; }
-            .cm-s-default .cm-bracket { color: #555; }
-            .cm-s-default .cm-tag { color: #555; }
-            .cm-s-default .cm-attribute { color: #555; }
-            .cm-s-default .cm-hr { color: #555; }
-            .cm-s-default .cm-link { color: #555; }
-            .cm-s-default .cm-error { color: #777; }
-        `;
-    }
-    document.head.appendChild(style);
+function ensureCMThemeLink() {
+    return document.getElementById('cm-theme') ||
+           Object.assign(document.head.appendChild(document.createElement('link')),
+                         { id:'cm-theme', rel:'stylesheet' });
 }
+
+function updateCodeMirrorTheme(theme) {
+    ensureCMThemeLink().href =
+        (theme === 'dark' ? '/static/css/cm-dark.css' : '/static/css/cm-light.css');
+}
+
+updateCodeMirrorTheme(document.documentElement.getAttribute('data-theme'));
+document.documentElement.addEventListener('data-theme-change', e =>
+    updateCodeMirrorTheme(e.detail));
 
 // Listen for theme changes and update the editor colors
 const themeObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
         if (mutation.attributeName === 'data-theme') {
-            applyCustomColors();
+            updateCodeMirrorTheme(mutation.newValue);
         }
     });
 });
@@ -1583,7 +1364,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000); // Delay by 1 second to let page finish loading first
 });
 
-// Add helper to position picker elements based on real size instead of a hard‑coded estimate
+// Add helper to position picker elements based on real size instead of a hard-coded estimate
 function positionPicker(picker, button) {
     // The picker must already be visible (display:block) before calling this
     const rect = button.getBoundingClientRect();
@@ -1611,14 +1392,14 @@ function positionPicker(picker, button) {
         if (left + pickerWidth > viewportWidth - 10) {
             // Align the right edges of button and picker
             left = rect.right - pickerWidth;
-            // Keep at least 10 px padding from the viewport's left side
+            // Keep at least 10 px padding from the viewport's left side
             left = Math.max(10, left);
         }
         // Ensure the picker does not overflow the bottom edge
         if (top + pickerHeight > viewportHeight - 10) {
             // Place the picker above the button
             top = rect.top - pickerHeight - 5;
-            // Keep at least 10 px from the top edge
+            // Keep at least 10 px from the top edge
             if (top < 10) {
                 top = 10;
             }
@@ -1627,6 +1408,57 @@ function positionPicker(picker, button) {
 
     picker.style.left = `${left}px`;
     picker.style.top = `${top}px`;
+}
+
+// Generic helper to toggle pickers (emoji, table, doc, etc.)
+function togglePicker({ get, set, create, button, closeSelector, onShow, onHide, beforeShow }) {
+    let picker = get();
+
+    // Lazily create picker if not existing
+    if (!picker) {
+        picker = create();
+        if (typeof set === 'function') set(picker);
+    }
+
+    // If picker is currently visible, hide it and exit
+    if (picker.style.display === 'block') {
+        picker.style.display = 'none';
+        picker.style.transform = '';
+        if (picker._closeHandler) {
+            document.removeEventListener('click', picker._closeHandler);
+            picker._closeHandler = null;
+        }
+        if (typeof onHide === 'function') onHide(picker);
+        return;
+    }
+
+    if (typeof beforeShow === 'function') beforeShow(picker);
+
+    // Show the picker
+    picker.style.display = 'block';
+
+    // Position after it's visible
+    requestAnimationFrame(() => {
+        positionPicker(picker, button);
+        setTimeout(() => positionPicker(picker, button), 50);
+    });
+
+    if (typeof onShow === 'function') onShow(picker);
+
+    // Outside click handler
+    const closeHandler = function(e) {
+        if (!picker.contains(e.target) && !e.target.closest(closeSelector)) {
+            picker.style.display = 'none';
+            picker.style.transform = '';
+            document.removeEventListener('click', closeHandler);
+            picker._closeHandler = null;
+            if (typeof onHide === 'function') onHide(picker);
+        }
+    };
+
+    // Delay registration to avoid immediate close
+    setTimeout(() => document.addEventListener('click', closeHandler), 0);
+    picker._closeHandler = closeHandler;
 }
 
 // Function to slugify heading text (mirror of Go makeSlug)
@@ -1784,6 +1616,7 @@ function createDocAnchorPicker() {
     const picker = document.createElement('div');
     picker.className = 'anchor-picker';
     picker.style.display = 'none';
+    picker.setAttribute('dir', 'auto');
 
     // Header (title + back button)
     const header = document.createElement('div');
@@ -1805,7 +1638,7 @@ function createDocAnchorPicker() {
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.className = 'anchor-search-input';
-    searchInput.placeholder = 'Search…';
+    searchInput.placeholder = window.i18n ? window.i18n.t('docpicker.search_placeholder') : 'Search…';
     picker.appendChild(searchInput);
 
     // Container for list items
@@ -1824,7 +1657,7 @@ function createDocAnchorPicker() {
         listContainer.innerHTML = '';
         const noRes = document.createElement('div');
         noRes.className = 'no-results';
-        noRes.textContent = msg;
+        noRes.textContent = window.i18n ? window.i18n.t(msg) || msg : msg;
         listContainer.appendChild(noRes);
     };
 
@@ -1848,7 +1681,7 @@ function createDocAnchorPicker() {
             : docs;
 
         if (filtered.length === 0) {
-            renderNoResults('No documents found');
+            renderNoResults('docpicker.no_results');
             return;
         }
 
@@ -1926,7 +1759,7 @@ function createDocAnchorPicker() {
             docs = documentData.length ? documentData : await fetchDocuments();
             renderDocList();
         } catch (err) {
-            renderNoResults(err.message || 'Failed to load documents');
+            renderNoResults(err.message || window.i18n ? window.i18n.t('docpicker.error_loading') : 'Error loading documents');
         }
     })();
 

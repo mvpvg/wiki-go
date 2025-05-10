@@ -39,6 +39,7 @@
   "settings.users": "Utilisateurs",
   "settings.wiki": "Wiki",
   "settings.content": "Contenu",
+  "settings.import": "Importer",
   "settings.language": "Langue de l'interface",
   "settings.theme": "Thème",
   "settings.save_success": "Paramètres enregistrés avec succès",
@@ -62,7 +63,10 @@
   "users.username": "Nom d'utilisateur",
   "users.password": "Mot de passe",
   "users.password_help": "Laisser vide pour conserver le mot de passe actuel",
-  "users.administrator": "Administrateur",
+  "users.role": "Rôle d'utilisateur",
+  "users.role_admin": "Administrateur",
+  "users.role_editor": "Éditeur",
+  "users.role_viewer": "Lecteur",
   "users.add_button": "Ajouter l'utilisateur",
   "users.update_button": "Mettre à jour l'utilisateur",
   "users.clear_button": "Effacer",
@@ -109,6 +113,7 @@
   "login.title": "Connexion",
   "login.username": "Nom d'utilisateur",
   "login.password": "Mot de passe",
+  "login.keep_logged_in": "Rester connecté (30 jours)",
   "login.button": "Connexion",
   "login.error": "Nom d'utilisateur ou mot de passe invalide",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Êtes-vous sûr de vouloir continuer ?",
 
   "error.admin_only": "Cette action nécessite des privilèges d'administrateur",
+  "error.permission_denied": "Vous n'avez pas les permissions nécessaires pour effectuer cette action",
   "error.login_required": "Connexion requise pour accéder à cette page",
   "error.invalid_credentials": "Nom d'utilisateur ou mot de passe invalide",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Erreur lors du chargement des documents: {0}",
 
   "anchorpicker.search_placeholder": "Rechercher des titres...",
-  "anchorpicker.no_results": "Aucun titre trouvé."
+  "anchorpicker.no_results": "Aucun titre trouvé.",
+
+  "import.title": "Importer des documents",
+  "import.description": "Importer des fichiers markdown à partir d'une archive ZIP. Les fichiers seront traités et stockés dans la structure de document appropriée. La structure des répertoires dans le ZIP (catégorie/sous-catégorie) sera préservée dans le wiki.",
+  "import.select_zip": "Sélectionner une archive ZIP",
+  "import.zip_help": "Téléversez un fichier ZIP contenant des fichiers markdown (.md) à importer.",
+  "import.start_button": "Importer",
+  "import.importing": "Importation en cours...",
+  "import.results_title": "Résultats de l'importation",
+  "import.success": "Importation terminée avec succès.",
+  "import.error": "Échec de l'importation : {0}"
 }

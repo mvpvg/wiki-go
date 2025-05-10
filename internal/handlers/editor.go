@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"wiki-go/internal/auth"
+	"wiki-go/internal/roles"
 	"wiki-go/internal/utils"
 )
 
@@ -20,16 +21,25 @@ func SourceHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	w.Header().Set("Pragma", "no-cache")
 	w.Header().Set("Expires", "0")
+	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Method not allowed",
+		})
 		return
 	}
 
-	// Check if user is authenticated
+	// Check if user is authenticated and has appropriate permissions
 	session := auth.GetSession(r)
-	if session == nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	if session == nil || (session.Role != roles.RoleAdmin && session.Role != roles.RoleEditor) {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Unauthorized. Admin or editor access required.",
+		})
 		return
 	}
 
@@ -37,11 +47,13 @@ func SourceHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/api/source")
 
 	var docPath string
+	var dirPath string
 
 	// Special case for homepage (root path)
 	if path == "" || path == "/" {
 		// For the homepage, we use the pages directory
 		docPath = filepath.Join(cfg.Wiki.RootDir, "pages", "home", "document.md")
+		dirPath = filepath.Join(cfg.Wiki.RootDir, "pages", "home")
 	} else {
 		// Clean and normalize the path
 		path = filepath.Clean(path)
@@ -49,52 +61,77 @@ func SourceHandler(w http.ResponseWriter, r *http.Request) {
 		path = strings.ReplaceAll(path, "\\", "/")
 
 		// Get the full filesystem path, adding the documents subdirectory
-		docPath = filepath.Join(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir, path, "document.md")
+		dirPath = filepath.Join(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir, path)
+		docPath = filepath.Join(dirPath, "document.md")
 	}
 
 	// Read the markdown file
 	content, err := os.ReadFile(docPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// If document doesn't exist, create it with a default title
-			dirName := filepath.Base(filepath.Dir(docPath))
-			title := utils.FormatDirName(dirName)
-			content = []byte(fmt.Sprintf("# %s\n", title))
-
-			// Create directory if it doesn't exist
-			dir := filepath.Dir(docPath)
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				http.Error(w, "Failed to create directory", http.StatusInternalServerError)
+			// Check if the directory exists
+			dirInfo, dirErr := os.Stat(dirPath)
+			if dirErr == nil && dirInfo.IsDir() {
+				// Directory exists but document.md doesn't
+				// Create a default content with the directory name as title
+				dirName := filepath.Base(path)
+				if dirName == "" || dirName == "." {
+					dirName = "Home"
+				}
+				
+				// Format the directory name for display (replace dashes with spaces, capitalize)
+				formattedName := utils.FormatDirName(dirName)
+				
+				// Create default content
+				defaultContent := fmt.Sprintf("# %s\n\nEnter content here", formattedName)
+				
+				// Set content type and write response
+				w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+				w.Write([]byte(defaultContent))
 				return
 			}
-
-			// Write the initial content
-			if err := os.WriteFile(docPath, content, 0644); err != nil {
-				http.Error(w, "Failed to create document", http.StatusInternalServerError)
-				return
-			}
-		} else {
-			http.Error(w, "Failed to read document", http.StatusInternalServerError)
+			
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": false,
+				"message": "Document not found",
+			})
 			return
 		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Failed to read document",
+		})
+		return
 	}
 
-	// Set content type and write response
+	// Reset content type for plain text response
 	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	w.Write(content)
 }
 
 // SaveHandler handles requests to save the markdown content of a page
 func SaveHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Method not allowed",
+		})
 		return
 	}
 
-	// Check if user is authenticated
+	// Check if user is authenticated and has appropriate permissions
 	session := auth.GetSession(r)
-	if session == nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+	if session == nil || (session.Role != roles.RoleAdmin && session.Role != roles.RoleEditor) {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Unauthorized. Admin or editor access required.",
+		})
 		return
 	}
 
@@ -125,7 +162,11 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	// Read the request body (new content)
 	content, err := io.ReadAll(r.Body)
 	if err != nil {
-		http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Failed to read request body",
+		})
 		return
 	}
 	defer r.Body.Close()
@@ -162,17 +203,29 @@ func SaveHandler(w http.ResponseWriter, r *http.Request) {
 	// Create directory if it doesn't exist
 	dir := filepath.Dir(docPath)
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		http.Error(w, "Failed to create directory", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Failed to create directory",
+		})
 		return
 	}
 
 	// Write the content to the file
 	if err := os.WriteFile(docPath, content, 0644); err != nil {
-		http.Error(w, "Failed to save document", http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Failed to save document",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Document saved successfully",
+	})
 }
 
 // CreateDocumentRequest represents the JSON payload for creating a new document
@@ -201,10 +254,15 @@ func CreateDocumentHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check authentication
+	// Check authentication and permissions
 	session := auth.GetSession(r)
-	if session == nil {
-		sendJSONError(w, "Unauthorized", http.StatusUnauthorized, "")
+	if session == nil || (session.Role != roles.RoleAdmin && session.Role != roles.RoleEditor) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Unauthorized. Admin or editor access required.",
+		})
 		return
 	}
 
@@ -278,9 +336,10 @@ func CreateDocumentHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Return success
 	w.Header().Set("Content-Type", "application/json")
-	response := CreateDocumentResponse{
-		URL:     "/" + cleanPath,
-		Message: "Document created successfully",
+	response := map[string]interface{}{
+		"success": true,
+		"url":     "/" + cleanPath,
+		"message": "Document created successfully",
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -291,12 +350,13 @@ func sendJSONError(w http.ResponseWriter, message string, statusCode int, errorD
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	response := ErrorResponse{
-		Message: message,
+	response := map[string]interface{}{
+		"success": false,
+		"message": message,
 	}
 
 	if errorDetails != "" {
-		response.Error = errorDetails
+		response["error"] = errorDetails
 	}
 
 	json.NewEncoder(w).Encode(response)
@@ -312,12 +372,18 @@ func DocumentHandler(w http.ResponseWriter, r *http.Request) {
 		// For now just return the document path
 		docPath := strings.TrimPrefix(r.URL.Path, "/api/document")
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": true,
 			"path":    docPath,
 			"message": "Document retrieval not yet implemented",
 		})
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Method not allowed",
+		})
 	}
 }
 
@@ -325,14 +391,19 @@ func DocumentHandler(w http.ResponseWriter, r *http.Request) {
 func DeleteDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	// Only process DELETE requests
 	if r.Method != http.MethodDelete {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Method not allowed",
+		})
 		return
 	}
 
-	// Check authentication
+	// Check authentication and permissions
 	session := auth.GetSession(r)
-	if session == nil {
-		sendJSONError(w, "Authentication required", http.StatusUnauthorized, "You must be logged in to delete documents")
+	if session == nil || (session.Role != roles.RoleAdmin && session.Role != roles.RoleEditor) {
+		sendJSONError(w, "Authentication required", http.StatusUnauthorized, "Admin or editor access required to delete documents")
 		return
 	}
 
@@ -359,22 +430,16 @@ func DeleteDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	fileInfo, err := os.Stat(fullPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			// Try with .md extension
-			if !strings.HasSuffix(fullPath, ".md") {
-				fullPath += ".md"
-				fileInfo, err = os.Stat(fullPath)
-				if err != nil {
-					sendJSONError(w, "Document not found", http.StatusNotFound, "The specified document does not exist")
-					return
-				}
-			} else {
-				sendJSONError(w, "Document not found", http.StatusNotFound, "The specified document does not exist")
-				return
-			}
-		} else {
-			sendJSONError(w, "Error accessing document", http.StatusInternalServerError, err.Error())
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"success": false,
+				"message": "Document not found",
+			})
 			return
 		}
+		sendJSONError(w, "Error accessing document", http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	// Delete the file or directory recursively
@@ -437,7 +502,8 @@ func DeleteDocumentHandler(w http.ResponseWriter, r *http.Request) {
 	// Return success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"message": "Document deleted successfully",
 	})
 }

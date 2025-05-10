@@ -1,0 +1,36 @@
+{{define "import-tab"}}
+<div id="import-tab" class="tab-pane">
+    <div class="import-management">
+        <h3>{{t "import.title"}}</h3>
+        <p class="import-description">{{t "import.description"}}</p>
+        
+        <form class="import-form" id="importForm">
+            <div class="form-group">
+                <label for="importZipFile">{{t "import.select_zip"}}</label>
+                <input type="file" id="importZipFile" name="zipFile" accept=".zip">
+                <small class="form-help">{{t "import.zip_help"}}</small>
+            </div>
+            
+            <div class="import-progress-container" style="display: none;">
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="importProgressBar"></div>
+                </div>
+                <div class="progress-status">
+                    <span id="importProgressText">0%</span>
+                    <span id="importProgressDetails"></span>
+                </div>
+            </div>
+            
+            <div class="import-results" style="display: none;">
+                <h4>{{t "import.results_title"}}</h4>
+                <div id="importResults" class="import-results-content"></div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="dialog-button primary" id="importButton">{{t "import.start_button"}}</button>
+                <button type="button" class="dialog-button" id="cancelImportButton">{{t "common.cancel"}}</button>
+            </div>
+        </form>
+    </div>
+</div>
+{{end}}

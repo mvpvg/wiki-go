@@ -98,6 +98,7 @@
         e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
+        const keepLoggedIn = document.getElementById('keepLoggedIn')?.checked || false;
 
         try {
             const response = await fetch('/api/login', {
@@ -105,7 +106,11 @@
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({
+                    username,
+                    password,
+                    keepLoggedIn
+                })
             });
 
             if (response.ok) {
@@ -163,14 +168,49 @@
             }
 
             const data = await response.json();
-            return data.is_admin === true;
+            return data.role === 'admin';
         } catch (error) {
             console.error('Error checking admin status:', error);
             return false;
         }
     }
 
-    // Function to show admin-only feature error
+    // Function to check if current user has a specific role
+    async function checkUserRole(requiredRole) {
+        try {
+            const response = await fetch('/api/check-auth');
+            if (!response.ok) {
+                return false;
+            }
+
+            const data = await response.json();
+            
+            // Handle role hierarchy
+            if (requiredRole === 'admin') {
+                return data.role === 'admin';
+            } else if (requiredRole === 'editor') {
+                return data.role === 'admin' || data.role === 'editor';
+            } else if (requiredRole === 'viewer') {
+                return data.role === 'admin' || data.role === 'editor' || data.role === 'viewer';
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Error checking user role:', error);
+            return false;
+        }
+    }
+
+    // Function to show permission error
+    function showPermissionError(requiredRole) {
+        let message = "You don't have permission to perform this action.";
+        if (requiredRole) {
+            message = `This feature requires ${requiredRole} privileges.`;
+        }
+        window.DialogSystem.showMessageDialog("Permission Denied", message);
+    }
+
+    // Function to show admin-only feature error (deprecated, use showPermissionError instead)
     function showAdminOnlyError() {
         window.DialogSystem.showMessageDialog("Admin Access Required", "This feature is only available to administrators.");
     }
@@ -194,35 +234,53 @@
                 return;
             }
 
-            // User is authenticated, check if admin
+            // User is authenticated, check role
             const authData = await authResponse.json();
-            const isAdmin = authData.is_admin === true;
-
+            const isAdmin = authData.role === 'admin';
+            const isEditor = authData.role === 'editor';
+            
+            // Show/hide buttons based on role
             if (isAdmin) {
                 // Admin user - show all admin buttons
                 document.querySelectorAll('.admin-only-button').forEach(btn => {
                     btn.style.cssText = 'display: inline-flex !important';
                 });
+                
+                // Show editor buttons
+                document.querySelectorAll('.editor-only-button').forEach(btn => {
+                    btn.style.cssText = 'display: inline-flex !important';
+                });
 
-                // Special case for rename button (only show if not on homepage)
-                const renameBtn = document.querySelector('.rename-document');
+                // Special case for move/rename button (only show if not on homepage)
+                const renameBtn = document.querySelector('.move-document');
                 if (renameBtn && (window.location.pathname === '/' || window.location.pathname === '/homepage')) {
                     renameBtn.style.cssText = 'display: none !important';
                 }
-
-                // Show logout button, hide login button
-                document.querySelector('.toolbar-button.auth-button.primary').style.cssText = 'display: none !important';
-                document.querySelector('.logout-button').style.cssText = 'display: inline-flex !important';
-            } else {
-                // Regular authenticated user - hide admin buttons
+            } else if (isEditor) {
+                // Editor user - hide admin buttons, show editor buttons
                 document.querySelectorAll('.admin-only-button').forEach(btn => {
                     btn.style.display = 'none';
                 });
-
-                // Show logout button, hide login button
-                document.querySelector('.toolbar-button.auth-button.primary').style.cssText = 'display: none !important';
-                document.querySelector('.logout-button').style.cssText = 'display: inline-flex !important';
+                
+                document.querySelectorAll('.editor-only-button').forEach(btn => {
+                    btn.style.cssText = 'display: inline-flex !important';
+                });
+                
+                // Special case for move/rename button (only show if not on homepage)
+                const renameBtn = document.querySelector('.move-document');
+                if (renameBtn && (window.location.pathname === '/' || window.location.pathname === '/homepage')) {
+                    renameBtn.style.cssText = 'display: none !important';
+                }
+            } else {
+                // Viewer user - hide admin and editor buttons
+                document.querySelectorAll('.admin-only-button, .editor-only-button').forEach(btn => {
+                    btn.style.display = 'none';
+                });
             }
+            
+            // Show logout button, hide login button for all authenticated users
+            document.querySelector('.toolbar-button.auth-button.primary').style.cssText = 'display: none !important';
+            document.querySelector('.logout-button').style.cssText = 'display: inline-flex !important';
         } catch (error) {
             console.error('Error checking authentication status:', error);
         }
@@ -257,9 +315,9 @@
             localStorage.removeItem('pendingAction');
 
             if (pendingAction === 'editPage') {
-                // Check if the user is an admin then load the editor
-                checkIfUserIsAdmin().then(isAdmin => {
-                    if (isAdmin && document.querySelector('.edit-page')) {
+                // Check if the user has editor or admin role then load the editor
+                checkUserRole('editor').then(canEdit => {
+                    if (canEdit && document.querySelector('.edit-page')) {
                         // Load editor immediately without delay
                         if (typeof WikiEditor !== 'undefined' && WikiEditor.loadEditor) {
                             const mainContent = document.querySelector('.content');
@@ -282,7 +340,9 @@
         showLoginDialog: showLoginDialog,
         hideLoginDialog: hideLoginDialog,
         checkIfUserIsAdmin: checkIfUserIsAdmin,
+        checkUserRole: checkUserRole,
         showAdminOnlyError: showAdminOnlyError,
+        showPermissionError: showPermissionError,
         updateToolbarButtons: updateToolbarButtons,
         checkDefaultPassword: checkDefaultPassword
     };

@@ -1,0 +1,215 @@
+# REST Client VSCode Extension compatible (humao.rest-client)
+
+### Variables
+@base_url = http://127.0.0.1:8080
+@username = admin
+@password = test
+@doc_name = API Test Document
+@doc_path = api-testing/api-test-document
+@doc_body = # API Test Document\n\nChanged content...
+@test_upload = example.txt
+@newuser_username = newuser
+@newuser_password = test
+@newuser_role = viewer
+
+### Authentication
+
+#### Login
+POST {{ base_url }}/api/login
+Content-Type: application/json
+
+{
+  "username": "{{ username }}",
+  "password": "{{ password }}"
+}
+
+### Store the login session
+@session = {{$login.response.headers['set-cookie']?.match(/session_token=([^;]+)/)[1]}}
+
+#### Check auth status
+GET {{ base_url }}/api/check-auth
+Cookie: session={{ session }}
+Accept: application/json
+
+#### Logout
+POST {{ base_url }}/api/logout
+Cookie: session={{ session }}
+Content-Type: application/json
+
+### Documents
+
+#### Create document
+POST {{ base_url }}/api/document/create
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "title": "{{ doc_name }}",
+  "path": "{{ doc_path }}"
+}
+
+#### Get document HTML
+GET {{ base_url }}/api/document/{{ doc_path }}
+Accept: text/html
+
+#### Get document source (Markdown)
+GET {{ base_url }}/api/source/{{ doc_path }}
+Cookie: session={{ session }}
+Accept: text/markdown
+
+#### Save document
+POST {{ base_url }}/api/save/{{ doc_path }}
+Cookie: session={{ session }}
+Content-Type: text/markdown
+
+{{ doc_body }}
+
+#### Rename document
+POST {{ base_url }}/api/document/move
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "sourcePath": "test-doc",
+  "targetPath": "",
+  "newSlug": "test-doc2"
+}
+
+#### Move document
+POST {{ base_url }}/api/document/move
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "sourcePath": "test-doc2",
+  "targetPath": "cat/sub",
+  "newSlug": "test-doc2"
+}
+
+#### Delete document
+DELETE {{ base_url }}/api/document/{{ doc_path }}
+Cookie: session={{ session }}
+
+### Files
+
+#### Upload file (text example)
+POST {{ base_url }}/api/files/upload
+Cookie: session={{ session }}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="docPath"
+
+{{ doc_path }}
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="example.txt"
+Content-Type: text/plain
+
+This is the content of the text file being uploaded.
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+#### List files
+GET {{ base_url }}/api/files/list/{{ doc_path }}
+Accept: application/json
+
+#### Serve file
+GET {{ base_url }}/api/files/{{ doc_path }}/{{ test_upload }}
+Cookie: session={{ session }}
+
+#### Delete file
+DELETE {{ base_url }}/api/files/delete/{{ doc_path }}/{{ test_upload }}
+Cookie: session={{ session }}
+
+### Comments
+
+#### Add comment
+POST {{ base_url }}/api/comments/add/{{ doc_path }}
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "content": "This is a comment"
+}
+
+#### Get comments
+# @name list_comments
+GET {{ base_url }}/api/comments/{{ doc_path }}
+Accept: application/json
+
+### Store the first comment id
+@comment_id = {{list_comments.response.body.$.comments[0].ID}}
+
+#### Delete comment
+DELETE {{ base_url }}/api/comments/delete/{{ doc_path }}/{{ comment_id }}
+Cookie: session={{ session }}
+
+### Versions
+
+#### Get version history
+# @name get_version_history
+GET {{ base_url }}/api/versions/{{ doc_path }}
+Accept: application/json
+
+### Store the first version’s timestamp
+@version_ts = {{get_version_history.response.body.$.versions[0].timestamp}}
+
+#### Restore version
+POST {{ base_url }}/api/versions/{{ doc_path }}/{{ version_ts }}/restore
+Cookie: session={{ session }}
+
+### Admin
+
+#### Get wiki settings
+GET {{ base_url }}/api/settings/wiki
+Cookie: session={{ session }}
+Accept: application/json
+
+#### Update wiki settings
+POST {{ base_url }}/api/settings/wiki
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "title": "📚 Wiki-Go",
+  "owner": "wikigo.leomoon.com",
+  "notice": "Copyright 2025 © All rights reserved.",
+  "timezone": "America/Vancouver",
+  "private": false,
+  "disable_comments": false,
+  "disable_file_upload_checking": false,
+  "max_versions": 10,
+  "max_upload_size": 1,
+  "language": "en"
+}
+
+#### List users
+GET {{ base_url }}/api/users
+Cookie: session={{ session }}
+Accept: application/json
+
+#### Create user
+POST {{ base_url }}/api/users
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "username": "{{ newuser_username }}",
+  "password": "{{ newuser_password }}",
+  "role": "{{ newuser_role }}"
+}
+
+#### Update user
+PUT {{ base_url }}/api/users
+Cookie: session={{ session }}
+Content-Type: application/json
+
+{
+  "username": "{{ newuser_username }}",
+  "new_password": "{{ newuser_password }}",
+  "role": "{{ newuser_role }}"
+}
+
+#### Delete user
+DELETE {{ base_url }}/api/users?username=newuser
+Cookie: session={{ session }}
+Content-Type: application/json

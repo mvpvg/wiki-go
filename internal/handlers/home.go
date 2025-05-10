@@ -525,7 +525,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	// Get authentication status
 	session := auth.GetSession(r)
 	isAuthenticated := session != nil
-	isAdmin := isAuthenticated && session.IsAdmin
+	
+	// Get user role
+	userRole := ""
+	if isAuthenticated && session != nil {
+		userRole = session.Role
+	}
 
 	// Render the page
 	data := &types.PageData{
@@ -537,7 +542,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 		CurrentDir:         &types.NavItem{Title: "Home", Path: "/", IsDir: true, IsActive: true},
 		AvailableLanguages: i18n.GetAvailableLanguages(),
 		IsAuthenticated:    isAuthenticated,
-		IsAdmin:            isAdmin,
+		UserRole:           userRole,
 	}
 
 	renderTemplate(w, data)

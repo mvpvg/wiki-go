@@ -39,6 +39,7 @@
   "settings.users": "Users",
   "settings.wiki": "Wiki",
   "settings.content": "Content",
+  "settings.import": "Import",
   "settings.language": "Interface Language",
   "settings.theme": "Theme",
   "settings.save_success": "Settings saved successfully",
@@ -62,7 +63,10 @@
   "users.username": "Username",
   "users.password": "Password",
   "users.password_help": "Leave empty to keep current password",
-  "users.administrator": "Administrator",
+  "users.role": "User Role",
+  "users.role_admin": "Administrator",
+  "users.role_editor": "Editor",
+  "users.role_viewer": "Viewer",
   "users.add_button": "Add User",
   "users.update_button": "Update User",
   "users.clear_button": "Clear",
@@ -109,6 +113,7 @@
   "login.title": "Login",
   "login.username": "Username",
   "login.password": "Password",
+  "login.keep_logged_in": "Keep me logged in (30 days)",
   "login.button": "Login",
   "login.error": "Invalid username or password",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Are you sure you want to proceed?",
 
   "error.admin_only": "This action requires administrator privileges",
+  "error.permission_denied": "You don't have permission to perform this action",
   "error.login_required": "Login required to access this page",
   "error.invalid_credentials": "Invalid username or password",
 
@@ -157,10 +163,20 @@
 
   "docpicker.search_placeholder": "Search documents...",
   "docpicker.loading": "Loading documents...",
-  "docpicker.admin_required": "Admin privileges required to access document list.",
+  "docpicker.admin_required": "Editor or admin privileges required to access document list.",
   "docpicker.no_results": "No documents found.",
   "docpicker.error_loading": "Error loading documents: {0}",
 
   "anchorpicker.search_placeholder": "Search headings...",
-  "anchorpicker.no_results": "No headings found."
+  "anchorpicker.no_results": "No headings found.",
+
+  "import.title": "Import Documents",
+  "import.description": "Import markdown files from a ZIP archive. Files will be processed and stored in the appropriate document structure. Directory structure in the ZIP (category/subcategory) will be preserved in the wiki.",
+  "import.select_zip": "Select ZIP Archive",
+  "import.zip_help": "Upload a ZIP file containing markdown (.md) files to import.",
+  "import.start_button": "Import",
+  "import.importing": "Importing...",
+  "import.results_title": "Import Results",
+  "import.success": "Import completed successfully.",
+  "import.error": "Import failed: {0}"
 }

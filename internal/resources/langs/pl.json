@@ -39,6 +39,7 @@
   "settings.users": "Użytkownicy",
   "settings.wiki": "Wiki",
   "settings.content": "Zawartość",
+  "settings.import": "Importuj",
   "settings.language": "Język interfejsu",
   "settings.theme": "Motyw",
   "settings.save_success": "Ustawienia zapisane pomyślnie",
@@ -62,7 +63,10 @@
   "users.username": "Nazwa użytkownika",
   "users.password": "Hasło",
   "users.password_help": "Pozostaw puste, aby zachować obecne hasło",
-  "users.administrator": "Administrator",
+  "users.role": "Rola użytkownika",
+  "users.role_admin": "Administrator",
+  "users.role_editor": "Redaktor",
+  "users.role_viewer": "Przeglądający",
   "users.add_button": "Dodaj użytkownika",
   "users.update_button": "Aktualizuj użytkownika",
   "users.clear_button": "Wyczyść",
@@ -109,6 +113,7 @@
   "login.title": "Logowanie",
   "login.username": "Nazwa użytkownika",
   "login.password": "Hasło",
+  "login.keep_logged_in": "Pozostań zalogowany (30 dni)",
   "login.button": "Zaloguj się",
   "login.error": "Nieprawidłowa nazwa użytkownika lub hasło",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "Czy na pewno chcesz kontynuować?",
 
   "error.admin_only": "Ta akcja wymaga uprawnień administratora",
+  "error.permission_denied": "Nie masz uprawnień do wykonania tej akcji",
   "error.login_required": "Wymagane logowanie, aby uzyskać dostęp do tej strony",
   "error.invalid_credentials": "Nieprawidłowa nazwa użytkownika lub hasło",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "Błąd podczas ładowania dokumentów: {0}",
 
   "anchorpicker.search_placeholder": "Szukaj nagłówków...",
-  "anchorpicker.no_results": "Nie znaleziono nagłówków."
+  "anchorpicker.no_results": "Nie znaleziono nagłówków.",
+
+  "import.title": "Importuj dokumenty",
+  "import.description": "Importuj pliki markdown z archiwum ZIP. Pliki zostaną przetworzone i zapisane w odpowiedniej strukturze dokumentów. Struktura katalogów w ZIP (kategoria/podkategoria) zostanie zachowana w wiki.",
+  "import.select_zip": "Wybierz archiwum ZIP",
+  "import.zip_help": "Prześlij plik ZIP zawierający pliki markdown (.md) do zaimportowania.",
+  "import.start_button": "Importuj",
+  "import.importing": "Importowanie...",
+  "import.results_title": "Wyniki importu",
+  "import.success": "Import zakończony pomyślnie.",
+  "import.error": "Import nie powiódł się: {0}"
 }

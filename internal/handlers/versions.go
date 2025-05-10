@@ -35,6 +35,7 @@ type VersionResponse struct {
 
 // Helper to send a JSON error response
 func sendJSONErrorVersion(w http.ResponseWriter, message string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	response := map[string]interface{}{
 		"success": false,
@@ -86,8 +87,6 @@ func VersionsHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config)
 
 		// Remove timestamp from path to get docPath
 		docPath = strings.TrimSuffix(pathWithoutRestore, "/"+timestamp)
-
-		fmt.Printf("Restore request: docPath=%s, timestamp=%s\n", docPath, timestamp)
 
 		// Check if timestamp is valid (14 digits)
 		if len(timestamp) != 14 || !utils.IsNumeric(timestamp) {

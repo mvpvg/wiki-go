@@ -17,6 +17,34 @@ var staticFiles = []string{
 	"favicon.svg",
 }
 
+// List of favicon files that should be treated as a group
+var faviconFiles = []string{
+	"favicon.ico",
+	"favicon.png",
+	"favicon.svg",
+}
+
+// Default content for custom.css file
+const defaultCustomCSS = `/*
+ * CUSTOM CSS OVERRIDES
+ *
+ * This file is for customizing the appearance of your wiki.
+ * Add your CSS rules below to override the default styles.
+ *
+ * Example - Change primary colors:
+ */
+
+/*
+:root {
+    --primary-color: #ff6600 !important;
+    --primary-hover: #ff8833 !important;
+}
+*/
+
+/* Your custom styles below */
+
+`
+
 // EnsureStaticAssetsExist copies default static assets to data/static directory if they don't exist
 func EnsureStaticAssetsExist(dataDir string) error {
 	// Create the static directory path
@@ -27,12 +55,42 @@ func EnsureStaticAssetsExist(dataDir string) error {
 		return fmt.Errorf("failed to create static directory: %w", err)
 	}
 
+	// Ensure custom.css exists
+	if err := ensureCustomCSSExists(staticDir); err != nil {
+		return fmt.Errorf("failed to create custom.css: %w", err)
+	}
+
 	// Get the embedded filesystem
 	fsys := resources.GetFileSystem()
+
+	// Special handling for favicon files - check if any custom favicon exists
+	anyCustomFaviconExists := false
+	for _, filename := range faviconFiles {
+		destPath := filepath.Join(staticDir, filename)
+		if _, err := os.Stat(destPath); err == nil {
+			// At least one custom favicon exists
+			anyCustomFaviconExists = true
+			break
+		}
+	}
 
 	// Copy each static file if it doesn't exist
 	for _, filename := range staticFiles {
 		destPath := filepath.Join(staticDir, filename)
+
+		// Check if this is a favicon file
+		isFaviconFile := false
+		for _, faviconFile := range faviconFiles {
+			if filename == faviconFile {
+				isFaviconFile = true
+				break
+			}
+		}
+
+		// For favicon files, only copy if no custom favicons exist at all
+		if isFaviconFile && anyCustomFaviconExists {
+			continue // Skip copying this favicon if any custom favicon exists
+		}
 
 		// Check if file already exists in data/static
 		if _, err := os.Stat(destPath); os.IsNotExist(err) {
@@ -107,4 +165,21 @@ func ServeStaticFile(w io.Writer, dataDir, filename string) error {
 
 	_, err = io.Copy(w, file)
 	return err
+}
+
+// ensureCustomCSSExists creates the custom.css file with default content if it doesn't exist
+func ensureCustomCSSExists(staticDir string) error {
+	customCSSPath := filepath.Join(staticDir, "custom.css")
+
+	// Check if the file already exists
+	if _, err := os.Stat(customCSSPath); os.IsNotExist(err) {
+		// Create the file with default content
+		err := os.WriteFile(customCSSPath, []byte(defaultCustomCSS), 0644)
+		if err != nil {
+			return err
+		}
+		log.Printf("Created default custom.css file at %s", customCSSPath)
+	}
+
+	return nil
 }

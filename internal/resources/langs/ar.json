@@ -39,6 +39,7 @@
   "settings.users": "المستخدمون",
   "settings.wiki": "ويكي",
   "settings.content": "المحتوى",
+  "settings.import": "استيراد",
   "settings.language": "لغة الواجهة",
   "settings.theme": "المظهر",
   "settings.save_success": "تم حفظ الإعدادات بنجاح",
@@ -62,7 +63,10 @@
   "users.username": "اسم المستخدم",
   "users.password": "كلمة المرور",
   "users.password_help": "اتركه فارغًا للاحتفاظ بكلمة المرور الحالية",
-  "users.administrator": "مدير",
+  "users.role": "دور المستخدم",
+  "users.role_admin": "مدير",
+  "users.role_editor": "محرر",
+  "users.role_viewer": "مشاهد",
   "users.add_button": "إضافة مستخدم",
   "users.update_button": "تحديث المستخدم",
   "users.clear_button": "مسح",
@@ -109,6 +113,7 @@
   "login.title": "تسجيل الدخول",
   "login.username": "اسم المستخدم",
   "login.password": "كلمة المرور",
+  "login.keep_logged_in": "أبقني متصلاً (30 يوماً)",
   "login.button": "تسجيل الدخول",
   "login.error": "اسم مستخدم أو كلمة مرور غير صالحة",
 
@@ -127,6 +132,7 @@
   "dialog.confirm_action": "هل أنت متأكد من رغبتك في المتابعة؟",
 
   "error.admin_only": "هذا الإجراء يتطلب صلاحيات المدير",
+  "error.permission_denied": "ليس لديك صلاحية للقيام بهذا الإجراء",
   "error.login_required": "تسجيل الدخول مطلوب للوصول إلى هذه الصفحة",
   "error.invalid_credentials": "اسم مستخدم أو كلمة مرور غير صالحة",
 
@@ -162,5 +168,15 @@
   "docpicker.error_loading": "خطأ في تحميل المستندات: {0}",
 
   "anchorpicker.search_placeholder": "ابحث في العناوين...",
-  "anchorpicker.no_results": "لم يتم العثور على عناوين."
+  "anchorpicker.no_results": "لم يتم العثور على عناوين.",
+
+  "import.title": "استيراد المستندات",
+  "import.description": "استيراد ملفات ماركداون من أرشيف ZIP. سيتم معالجة الملفات وتخزينها في بنية المستندات المناسبة. سيتم الحفاظ على بنية المجلدات في ملف ZIP (الفئة/الفئة الفرعية) في الويكي.",
+  "import.select_zip": "اختر أرشيف ZIP",
+  "import.zip_help": "قم برفع ملف ZIP يحتوي على ملفات ماركداون (.md) للاستيراد.",
+  "import.start_button": "استيراد",
+  "import.importing": "جارٍ الاستيراد...",
+  "import.results_title": "نتائج الاستيراد",
+  "import.success": "تم الاستيراد بنجاح.",
+  "import.error": "فشل الاستيراد: {0}"
 }

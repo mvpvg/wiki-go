@@ -9,62 +9,99 @@ import (
 	"wiki-go/internal/config"
 	"wiki-go/internal/crypto"
 	"wiki-go/internal/resources"
+	"wiki-go/internal/i18n"
+	"wiki-go/internal/roles"
 )
 
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	KeepLoggedIn bool   `json:"keepLoggedIn"`
 }
 
 // LoginHandler handles API login requests
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Method not allowed",
+		})
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
 
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Invalid request body",
+		})
 		return
 	}
 
 	// Validate credentials
-	valid, isAdmin := auth.ValidateCredentials(req.Username, req.Password, cfg)
+	valid, role := auth.ValidateCredentials(req.Username, req.Password, cfg)
 	if !valid {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Invalid credentials",
+		})
 		return
 	}
 
 	// Create session
-	if err := auth.CreateSession(w, req.Username, isAdmin, cfg); err != nil {
-		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+	if err := auth.CreateSession(w, req.Username, role, req.KeepLoggedIn, cfg); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Failed to create session",
+		})
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Login successful",
+	})
 }
 
 // CheckAuthHandler checks if the user is authenticated
 func CheckAuthHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
 	session := auth.GetSession(r)
 	if session == nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": false,
+			"message": "Unauthorized",
+		})
 		return
 	}
 
-	// Return user information including admin status
-	w.Header().Set("Content-Type", "application/json")
+	// Return user information including role
 	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
 		"username": session.Username,
-		"is_admin": session.IsAdmin,
+		"role":     session.Role,
 	})
 }
 
 // LogoutHandler handles user logout
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	
 	auth.ClearSession(w, r, cfg)
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Logout successful",
+	})
 }
 
 // LoginPageHandler renders the login page
@@ -90,8 +127,15 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 		data.Theme = cookie.Value
 	}
 
-	// Get and execute login template
-	tmpl, err := template.ParseFS(resources.GetTemplatesFS(), "templates/login.html")
+	// Create function map with translation function
+	funcMap := template.FuncMap{
+		"t": func(key string) string {
+			return i18n.Translate(key)
+		},
+	}
+
+	// Get and execute login template with translation function
+	tmpl, err := template.New("login.html").Funcs(funcMap).ParseFS(resources.GetTemplatesFS(), "templates/login.html")
 	if err != nil {
 		http.Error(w, "Error loading login template: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -119,7 +163,7 @@ func CheckDefaultPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	defaultPasswordInUse := false
 
 	for _, user := range cfg.Users {
-		if user.IsAdmin && user.Username == defaultUsername {
+		if user.Role == roles.RoleAdmin && user.Username == defaultUsername {
 			// Check if password is still the default
 			if crypto.CheckPasswordHash(defaultPassword, user.Password) {
 				defaultPasswordInUse = true

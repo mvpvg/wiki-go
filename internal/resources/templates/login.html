@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-theme="{{ .Theme }}">
 <head>
-    <title>Login - {{ .Config.Wiki.Title }}</title>
+    <title>{{t "login.title"}} - {{ .Config.Wiki.Title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Prevent theme flash -->
     <script>
@@ -50,18 +50,22 @@
                 <i class="fa fa-times"></i>
             </button>
             <h2 class="login-title">{{ .Config.Wiki.Title }}</h2>
-            <div class="error-message" id="loginError" style="display: none;"></div>
+            <div class="error-message" id="loginError" style="display: none;" data-error-message="{{t "login.error"}}"></div>
             <form class="login-form" id="loginForm">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">{{t "login.username"}}</label>
                     <input type="text" id="username" name="username" autocomplete="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">{{t "login.password"}}</label>
                     <input type="password" id="password" name="password" autocomplete="current-password" required>
                 </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="keepLoggedIn" name="keepLoggedIn">
+                    <label for="keepLoggedIn">{{t "login.keep_logged_in"}}</label>
+                </div>
                 <p>This wiki is private and requires authentication to view content.</p>
-                <button type="submit" class="login-button">Login</button>
+                <button type="submit" class="login-button">{{t "login.button"}}</button>
             </form>
         </div>
     </div>
@@ -70,11 +74,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const errorMessage = document.getElementById('loginError');
+            const errorText = errorMessage.getAttribute('data-error-message');
 
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const username = document.getElementById('username').value;
                 const password = document.getElementById('password').value;
+                const keepLoggedIn = document.getElementById('keepLoggedIn').checked;
 
                 try {
                     const response = await fetch('/api/login', {
@@ -82,14 +88,18 @@
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify({ username, password })
+                        body: JSON.stringify({
+                            username,
+                            password,
+                            keepLoggedIn
+                        })
                     });
 
                     if (response.ok) {
                         // Redirect to home page after successful login
                         window.location.href = '/';
                     } else {
-                        errorMessage.textContent = 'Invalid username or password';
+                        errorMessage.textContent = errorText;
                         errorMessage.style.display = 'block';
                     }
                 } catch (error) {

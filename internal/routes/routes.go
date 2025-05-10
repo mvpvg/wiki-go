@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -143,10 +144,79 @@ func generateNonce() string {
 }
 */
 
+// Helper function to check if a file exists
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+// Helper function to check if any custom favicon exists
+func anyCustomFaviconExists(rootDir string) bool {
+	for _, format := range []string{"favicon.ico", "favicon.png", "favicon.svg"} {
+		if fileExists(filepath.Join(rootDir, "static", format)) {
+			return true
+		}
+	}
+	return false
+}
+
+// Helper function to handle favicon requests with proper fallback logic
+func handleFaviconRequest(w http.ResponseWriter, r *http.Request, cfg *config.Config, format string) {
+	// Add cache headers for favicon (1 week)
+	w.Header().Set("Cache-Control", "public, max-age=604800")
+
+	// Check if this specific favicon exists in custom path
+	customPath := filepath.Join(cfg.Wiki.RootDir, "static", "favicon."+format)
+	if fileExists(customPath) {
+		http.ServeFile(w, r, customPath)
+		return
+	}
+
+	// If any custom favicon exists but not this one, return 404
+	if anyCustomFaviconExists(cfg.Wiki.RootDir) {
+		http.NotFound(w, r)
+		return
+	}
+
+	// Fallback to embedded favicon only if no custom favicons exist
+	http.ServeFile(w, r, filepath.Join("internal", "resources", "static", "favicon."+format))
+}
+
 // SetupRoutes configures all routes for the application
 func SetupRoutes(cfg *config.Config) {
 	// Create a new ServeMux to apply middleware to all routes
 	mux := http.NewServeMux()
+
+	// Role-based middleware
+	adminMiddleware := func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if !auth.RequireRole(r, "admin") {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusForbidden)
+				json.NewEncoder(w).Encode(map[string]interface{}{
+					"success": false,
+					"message": "Admin access required",
+				})
+				return
+			}
+			next(w, r)
+		}
+	}
+
+	editorMiddleware := func(next http.HandlerFunc) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if !auth.RequireRole(r, "editor") {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusForbidden)
+				json.NewEncoder(w).Encode(map[string]interface{}{
+					"success": false,
+					"message": "Unauthorized. Admin or editor access required.",
+				})
+				return
+			}
+			next(w, r)
+		}
+	}
 
 	// Serve static files with custom handling to check data/static first
 	mux.HandleFunc("/static/", func(w http.ResponseWriter, r *http.Request) {
@@ -166,11 +236,27 @@ func SetupRoutes(cfg *config.Config) {
 		// Add appropriate cache headers for static files
 		addCacheControlHeaders(w, filename)
 
+		// Check if this is a favicon file
+		isFaviconFile := false
+		for _, ext := range []string{"ico", "png", "svg"} {
+			if filename == "favicon."+ext {
+				isFaviconFile = true
+				break
+			}
+		}
+
 		// First check if the file exists in data/static
 		customPath := filepath.Join(cfg.Wiki.RootDir, "static", filename)
-		if _, err := os.Stat(customPath); err == nil {
+		if fileExists(customPath) {
 			// File exists in data/static, serve it directly
 			http.ServeFile(w, r, customPath)
+			return
+		}
+
+		// For favicon files, check if any custom favicon exists before falling back
+		if isFaviconFile && anyCustomFaviconExists(cfg.Wiki.RootDir) {
+			// If any custom favicon exists but not this one, return 404
+			http.NotFound(w, r)
 			return
 		}
 
@@ -180,38 +266,17 @@ func SetupRoutes(cfg *config.Config) {
 
 	// Serve favicons directly from root path
 	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		// Add cache headers for favicon (1 week)
-		w.Header().Set("Cache-Control", "public, max-age=604800")
-
-		customPath := filepath.Join(cfg.Wiki.RootDir, "static", "favicon.ico")
-		if _, err := os.Stat(customPath); err == nil {
-			http.ServeFile(w, r, customPath)
-			return
-		}
-		http.ServeFile(w, r, filepath.Join("internal", "resources", "static", "favicon.ico"))
+		handleFaviconRequest(w, r, cfg, "ico")
 	})
+
 	mux.HandleFunc("/favicon.png", func(w http.ResponseWriter, r *http.Request) {
-		// Add cache headers for favicon (1 week)
-		w.Header().Set("Cache-Control", "public, max-age=604800")
-
-		customPath := filepath.Join(cfg.Wiki.RootDir, "static", "favicon.png")
-		if _, err := os.Stat(customPath); err == nil {
-			http.ServeFile(w, r, customPath)
-			return
-		}
-		http.ServeFile(w, r, filepath.Join("internal", "resources", "static", "favicon.png"))
+		handleFaviconRequest(w, r, cfg, "png")
 	})
+
 	mux.HandleFunc("/favicon.svg", func(w http.ResponseWriter, r *http.Request) {
-		// Add cache headers for favicon (1 week)
-		w.Header().Set("Cache-Control", "public, max-age=604800")
-
-		customPath := filepath.Join(cfg.Wiki.RootDir, "static", "favicon.svg")
-		if _, err := os.Stat(customPath); err == nil {
-			http.ServeFile(w, r, customPath)
-			return
-		}
-		http.ServeFile(w, r, filepath.Join("internal", "resources", "static", "favicon.svg"))
+		handleFaviconRequest(w, r, cfg, "svg")
 	})
+
 	mux.HandleFunc("/logo.png", func(w http.ResponseWriter, r *http.Request) {
 		// Add cache headers for logo (1 week)
 		w.Header().Set("Cache-Control", "public, max-age=604800")
@@ -261,23 +326,23 @@ func SetupRoutes(cfg *config.Config) {
 		handlers.SearchHandler(w, r, cfg)
 	})
 
-	// Settings API
-	mux.HandleFunc("/api/settings/wiki", handlers.WikiSettingsHandler)
+	// Settings API - Admin only
+	mux.HandleFunc("/api/settings/wiki", adminMiddleware(handlers.WikiSettingsHandler))
 
-	// User Management API
-	mux.HandleFunc("/api/users", handlers.UsersHandler)
+	// User Management API - Admin only
+	mux.HandleFunc("/api/users", adminMiddleware(handlers.UsersHandler))
 
-	// Version history API
-	mux.HandleFunc("/api/versions/", func(w http.ResponseWriter, r *http.Request) {
+	// Version history API - Editor or Admin
+	mux.HandleFunc("/api/versions/", editorMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		handlers.VersionsHandler(w, r, cfg)
-	})
+	}))
 
-	// Document move/rename API
-	mux.HandleFunc("/api/document/move", func(w http.ResponseWriter, r *http.Request) {
+	// Document move/rename API - Editor or Admin
+	mux.HandleFunc("/api/document/move", editorMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		handlers.MoveDocumentHandler(w, r, cfg)
-	})
+	}))
 
-	// Markdown rendering API
+	// Markdown rendering API - No auth required
 	mux.HandleFunc("/api/render-markdown", handlers.RenderMarkdownHandler)
 
 	// Emoji data API - serve the emojis.json file
@@ -298,6 +363,18 @@ func SetupRoutes(cfg *config.Config) {
 	mux.HandleFunc("/api/documents/list", func(w http.ResponseWriter, r *http.Request) {
 		handlers.ListDocumentsHandler(w, r, cfg)
 	})
+
+	// Import API - Admin only
+	mux.HandleFunc("/api/import", func(w http.ResponseWriter, r *http.Request) {
+		handlers.ImportHandler(w, r, cfg)
+	})
+
+	mux.HandleFunc("/api/import/status/", func(w http.ResponseWriter, r *http.Request) {
+		handlers.ImportStatusHandler(w, r, cfg)
+	})
+
+	// Utility API endpoints
+	mux.HandleFunc("/api/utils/slugify", handlers.SlugifyHandler)
 
 	// Login page
 	mux.HandleFunc("/login", handlers.LoginPageHandler)

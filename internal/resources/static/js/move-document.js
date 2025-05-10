@@ -11,10 +11,10 @@ function showMoveDocDialog() {
     const moveSourcePathInput = document.getElementById('moveSourcePath');
     const moveTargetPathInput = document.getElementById('moveTargetPath');
 
-    // First check if user is an admin
-    window.Auth.checkIfUserIsAdmin().then(isAdmin => {
-        if (!isAdmin) {
-            window.Auth.showAdminOnlyError();
+    // First check if user has editor or admin role
+    window.Auth.checkUserRole('editor').then(canEdit => {
+        if (!canEdit) {
+            window.Auth.showPermissionError('editor');
             return;
         }
 
@@ -75,10 +75,23 @@ async function handleMoveDocumentSubmit(e) {
         return;
     }
 
-    // Extract the new slug from the target path
-    const pathParts = targetPath.split('/');
-    const newSlug = pathParts.pop();
-    const newPath = pathParts.join('/');
+    // Check if we're moving to the root or to another directory
+    let newSlug, newPath;
+    
+    // Special case: if we're moving from a category to the root
+    const sourceHasCategory = sourcePath.includes('/');
+    const movingToRoot = !targetPath.includes('/');
+    
+    if (targetPath.includes('/')) {
+        // Moving to another directory
+        const pathParts = targetPath.split('/');
+        newSlug = pathParts.pop();
+        newPath = pathParts.join('/');
+    } else {
+        // Moving to root
+        newSlug = targetPath;
+        newPath = '';
+    }
 
     try {
         const response = await fetch('/api/document/move', {
@@ -128,12 +141,13 @@ async function handleMoveDocumentSubmit(e) {
 function updateMoveButtonVisibility() {
     const moveDocButton = document.querySelector('.move-document');
     if (!moveDocButton) return;
-    
+
     const currentPath = getCurrentDocPath();
     if (currentPath === '' || currentPath === '/' || currentPath.toLowerCase() === 'homepage') {
         moveDocButton.style.display = 'none';
     } else {
-        moveDocButton.style.display = '';
+        // Ensure it is visible (inline-flex) so it overrides the admin-only-button default
+        moveDocButton.style.cssText = 'display: inline-flex !important';
     }
 }
 
@@ -141,16 +155,16 @@ function updateMoveButtonVisibility() {
 function initMoveDocument() {
     const moveDocButton = document.querySelector('.move-document');
     const moveDocDialog = document.querySelector('.move-document-dialog');
-    
+
     if (!moveDocButton || !moveDocDialog) return;
-    
+
     const moveDocForm = document.getElementById('moveDocumentForm');
     const closeMoveDocDialog = moveDocDialog.querySelector('.close-dialog');
     const cancelMoveDocButton = moveDocDialog.querySelector('.cancel-dialog');
 
     // Hide move button for homepage
     updateMoveButtonVisibility();
-    
+
     // Update visibility when editor is loaded
     document.addEventListener('editor-loaded', updateMoveButtonVisibility);
 
