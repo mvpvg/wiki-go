@@ -149,6 +149,7 @@
   "login.error": "שם משתמש או סיסמה שגויים",
   "login.ban": "יותר מדי ניסיונות התחברות כושלים; נסה שוב מאוחר יותר",
   "login.retry_in": "נסה שוב בעוד",
+  "login.logging_in": "מתחבר...",
 
   "new_doc.title": "יצירת מסמך חדש",
   "new_doc.document_title": "כותרת מסמך",

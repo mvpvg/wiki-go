@@ -149,6 +149,7 @@
   "login.error": "Nieprawidłowa nazwa użytkownika lub hasło",
   "login.ban": "Zbyt wiele nieudanych prób logowania; spróbuj ponownie później",
   "login.retry_in": "spróbuj ponownie za",
+  "login.logging_in": "Logowanie...",
 
   "new_doc.title": "Utwórz nowy dokument",
   "new_doc.document_title": "Tytuł dokumentu",

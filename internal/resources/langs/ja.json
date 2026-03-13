@@ -149,6 +149,7 @@
   "login.error": "ユーザー名またはパスワードが無効です",
   "login.ban": "ログイン失敗が多すぎます。後でもう一度お試しください",
   "login.retry_in": "再試行まで",
+  "login.logging_in": "ログイン中...",
 
   "new_doc.title": "新規文書を作成",
   "new_doc.document_title": "文書タイトル",

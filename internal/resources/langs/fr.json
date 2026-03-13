@@ -149,6 +149,7 @@
   "login.error": "Nom d'utilisateur ou mot de passe invalide",
   "login.ban": "Trop de tentatives de connexion échouées; réessayez plus tard",
   "login.retry_in": "réessayer dans",
+  "login.logging_in": "Connexion...",
 
   "new_doc.title": "Créer un nouveau document",
   "new_doc.document_title": "Titre du document",

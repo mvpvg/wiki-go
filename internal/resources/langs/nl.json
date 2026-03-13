@@ -149,6 +149,7 @@
   "login.error": "Ongeldige gebruikersnaam of wachtwoord",
   "login.ban": "Te veel mislukte inlogpogingen; probeer het later opnieuw",
   "login.retry_in": "probeer opnieuw over",
+  "login.logging_in": "Inloggen...",
 
   "new_doc.title": "Nieuw document aanmaken",
   "new_doc.document_title": "Documenttitel",

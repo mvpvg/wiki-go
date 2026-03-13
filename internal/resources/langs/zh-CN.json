@@ -149,6 +149,7 @@
   "login.error": "用户名或密码无效",
   "login.ban": "登录失败次数过多；请稍后再试",
   "login.retry_in": "请在此时间后重试",
+  "login.logging_in": "登录中...",
 
   "new_doc.title": "创建新文档",
   "new_doc.document_title": "文档标题",

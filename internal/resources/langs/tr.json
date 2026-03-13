@@ -149,6 +149,7 @@
   "login.error": "Geçersiz kullanıcı adı veya şifre",
   "login.ban": "Çok fazla başarısız giriş denemesi; daha sonra tekrar deneyin",
   "login.retry_in": "tekrar deneyin",
+  "login.logging_in": "Giriş yapılıyor...",
 
   "new_doc.title": "Yeni Belge Oluştur",
   "new_doc.document_title": "Belge Başlığı",

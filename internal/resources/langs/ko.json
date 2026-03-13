@@ -147,6 +147,7 @@
   "login.error": "잘못된 사용자 이름 또는 비밀번호",
   "login.ban": "로그인 시도 횟수가 너무 많음; 나중에 다시 시도하세요",
   "login.retry_in": "재시도 시간",
+  "login.logging_in": "로그인 중...",
 
   "new_doc.title": "새 문서 만들기",
   "new_doc.document_title": "문서 제목",

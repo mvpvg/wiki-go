@@ -149,6 +149,7 @@
   "login.error": "Ugyldig brukernavn eller passord",
   "login.ban": "For mange mislykkede påloggingsforsøk; prøv igjen senere",
   "login.retry_in": "prøv igjen om",
+  "login.logging_in": "Logger inn...",
 
   "new_doc.title": "Opprett nytt dokument",
   "new_doc.document_title": "Dokumenttittel",
