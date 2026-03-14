@@ -31,6 +31,7 @@
   "common.unknown_error": "خطای ناشناخته",
 
   "nav.home": "خانه",
+  "nav.back_to_home": "بازگشت به خانه",
 
   "editor.title": "ویرایش سند",
   "editor.save_success": "سند با موفقیت ذخیره شد",

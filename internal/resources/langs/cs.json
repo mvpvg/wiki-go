@@ -31,6 +31,7 @@
   "common.unknown_error": "Neznámá chyba",
 
   "nav.home": "Domů",
+  "nav.back_to_home": "Zpět na úvodní stránku",
 
   "editor.title": "Upravit dokument",
   "editor.save_success": "Dokument byl úspěšně uložen",

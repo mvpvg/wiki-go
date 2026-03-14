@@ -31,6 +31,7 @@
   "common.unknown_error": "Bilinmeyen hata",
 
   "nav.home": "Ana Sayfa",
+  "nav.back_to_home": "Ana Sayfaya Dön",
 
   "editor.title": "Belgeyi Düzenle",
   "editor.save_success": "Belge başarıyla kaydedildi",
@@ -44,7 +45,7 @@
 
   "settings.title": "Wiki Ayarları",
   "settings.general": "Genel",
-  "settings.access_control": "Erişim Kontrolü",
+  "settings.access": "Erişim Kontrolü",
   "settings.users": "Kullanıcılar",
   "settings.wiki": "Wiki",
   "settings.content": "İçerik",

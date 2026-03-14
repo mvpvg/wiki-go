@@ -31,6 +31,7 @@
   "common.unknown_error": "Unknown error",
 
   "nav.home": "Home",
+  "nav.back_to_home": "Back to Home",
 
   "editor.title": "Edit Document",
   "editor.save_success": "Document saved successfully",

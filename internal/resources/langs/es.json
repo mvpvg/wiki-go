@@ -31,6 +31,7 @@
   "common.unknown_error": "Error desconocido",
 
   "nav.home": "Inicio",
+  "nav.back_to_home": "Volver al inicio",
 
   "editor.title": "Editar Documento",
   "editor.save_success": "Documento guardado con éxito",

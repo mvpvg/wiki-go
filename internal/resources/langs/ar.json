@@ -31,6 +31,7 @@
   "common.unknown_error": "خطأ غير معروف",
 
   "nav.home": "الرئيسية",
+  "nav.back_to_home": "العودة إلى الرئيسية",
 
   "editor.title": "تعديل المستند",
   "editor.save_success": "تم حفظ المستند بنجاح",

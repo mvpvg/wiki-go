@@ -31,6 +31,7 @@
   "common.unknown_error": "Errore sconosciuto",
 
   "nav.home": "Home",
+  "nav.back_to_home": "Torna alla home",
 
   "editor.title": "Modifica Documento",
   "editor.save_success": "Documento salvato con successo",
@@ -44,7 +45,7 @@
 
   "settings.title": "Impostazioni Wiki",
   "settings.general": "Generale",
-  "settings.access_control": "Controllo accessi",
+  "settings.access": "Controllo accessi",
   "settings.users": "Utenti",
   "settings.wiki": "Wiki",
   "settings.content": "Contenuto",

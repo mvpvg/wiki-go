@@ -31,6 +31,7 @@
   "common.unknown_error": "Ukjent feil",
 
   "nav.home": "Hjem",
+  "nav.back_to_home": "Tilbake til forsiden",
 
   "editor.title": "Rediger dokument",
   "editor.save_success": "Dokumentet ble lagret",
@@ -44,7 +45,7 @@
 
   "settings.title": "Wiki-innstillinger",
   "settings.general": "Generelt",
-  "settings.access_control": "Tilgangskontroll",
+  "settings.access": "Tilgangskontroll",
   "settings.users": "Brukere",
   "settings.wiki": "Wiki",
   "settings.content": "Innhold",

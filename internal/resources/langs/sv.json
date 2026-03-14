@@ -31,6 +31,7 @@
   "common.unknown_error": "Okänt fel",
 
   "nav.home": "Hem",
+  "nav.back_to_home": "Tillbaka till startsidan",
 
   "editor.title": "Redigera dokument",
   "editor.save_success": "Dokumentet har sparats",
@@ -44,7 +45,7 @@
 
   "settings.title": "Wiki-inställningar",
   "settings.general": "Allmänt",
-  "settings.access_control": "Åtkomstkontroll",
+  "settings.access": "Åtkomstkontroll",
   "settings.users": "Användare",
   "settings.wiki": "Wiki",
   "settings.content": "Innehåll",

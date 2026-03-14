@@ -31,6 +31,7 @@
   "common.unknown_error": "未知錯誤",
 
   "nav.home": "首頁",
+  "nav.back_to_home": "返回首頁",
 
   "editor.title": "編輯文件",
   "editor.save_success": "文件儲存成功",
@@ -44,7 +45,7 @@
 
   "settings.title": "Wiki 設定",
   "settings.general": "一般",
-  "settings.access_control": "存取控制",
+  "settings.access": "存取控制",
   "settings.users": "使用者",
   "settings.wiki": "Wiki",
   "settings.content": "內容",
