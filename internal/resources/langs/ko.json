@@ -170,6 +170,12 @@
   "new_doc.create_button": "생성",
   "new_doc.cancel_button": "취소",
   "new_doc.already_exists": "문서가 이미 존재합니다",
+  "new_doc.default_content": "여기에 내용을 입력하세요.",
+  "new_doc.kanban_title": "칸반 제목",
+  "new_doc.kanban_todo": "할 일",
+  "new_doc.kanban_in_progress": "진행 중",
+  "new_doc.kanban_done": "완료",
+  "new_doc.kanban_task_example": "작업 1",
 
   "dialog.confirm_delete": "정말로 삭제하시겠습니까?",
   "dialog.confirm_action": "정말로 진행하시겠습니까?",
