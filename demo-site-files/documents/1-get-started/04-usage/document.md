@@ -112,4 +112,4 @@ The commenting system allows users to provide feedback and engage in discussions
 
 If you are migrating from Notion, a community-provided Python script is available to help import your Notion markdown export directly into Wiki-Go's document tree. It automatically converts page hierarchies and handles file attachments.
 
-For detailed instructions, see the [Notion Import Tool Documentation](tools/notion-import/README.md).
+For detailed instructions, see the [Notion Import Tool Documentation](https://github.com/leomoon-studios/wiki-go/tree/master/tools/notion-import).
