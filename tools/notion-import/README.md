@@ -1,4 +1,4 @@
-# notion-to-wikigo
+# Notion to Wiki-Go Import
 
 A Python script that imports a [Notion](https://notion.so) markdown export into a
 [LeoMoon Wiki-Go](https://github.com/LeoMoonSecurity/wiki-go) document tree.
