@@ -14,10 +14,18 @@ type NavItem struct {
 	Title          string
 	Path           string
 	IsDir          bool
-	IsAlwaysOpen   bool
 	Children       []*NavItem
 	IsActive       bool
 	DocumentLayout string // Layout type from frontmatter
+}
+
+// NavTree wraps the navigation root with render-time options that apply
+// uniformly to every node (e.g. whether all directories should render expanded).
+// It exists so per-request, per-tree flags don't have to be duplicated onto
+// every NavItem.
+type NavTree struct {
+	Root       *NavItem
+	AlwaysOpen bool
 }
 
 // BreadcrumbItem represents an item in the breadcrumb trail
@@ -29,7 +37,7 @@ type BreadcrumbItem struct {
 
 // PageData represents the data passed to the template
 type PageData struct {
-	Navigation         *NavItem
+	Navigation         *NavTree
 	Content            template.HTML
 	DirContent         template.HTML
 	Breadcrumbs        []BreadcrumbItem

@@ -526,7 +526,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	}
 
 	// Get navigation items
-	nav, err := utils.BuildNavigation(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir, cfg.Wiki.AlwaysOpenChildrenInSidebar)
+	nav, err := utils.BuildNavigation(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir)
 	if err != nil {
 		log.Printf("Error building navigation: %v", err)
 		http.Error(w, "Failed to build navigation", http.StatusInternalServerError)
@@ -588,7 +588,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 
 	// Render the page
 	data := &types.PageData{
-		Navigation:         nav,
+		Navigation:         &types.NavTree{Root: nav, AlwaysOpen: cfg.Wiki.AlwaysOpenChildrenInSidebar},
 		Content:            renderedContent,
 		Breadcrumbs:        []types.BreadcrumbItem{{Title: "Home", Path: "/", IsLast: true}},
 		Config:             cfg,

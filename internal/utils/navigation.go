@@ -64,13 +64,12 @@ func ToURLPath(path string) string {
 }
 
 // BuildNavigation builds the navigation structure from the root directory
-func BuildNavigation(rootDir string, documentsDir string, alwaysOpen bool) (*types.NavItem, error) {
+func BuildNavigation(rootDir string, documentsDir string) (*types.NavItem, error) {
 	root := &types.NavItem{
-		Title:        "Wiki-Go",
-		Path:         "/",
-		IsAlwaysOpen: alwaysOpen,
-		IsDir:        true,
-		Children:     make([]*types.NavItem, 0),
+		Title:    "Wiki-Go",
+		Path:     "/",
+		IsDir:    true,
+		Children: make([]*types.NavItem, 0),
 	}
 
 	// Create the documents directory path
@@ -140,11 +139,10 @@ func BuildNavigation(rootDir string, documentsDir string, alwaysOpen bool) (*typ
 				}
 
 				found = &types.NavItem{
-					Title:        dirTitle,
-					Path:         urlPath,
-					IsAlwaysOpen: alwaysOpen,
-					IsDir:        true,
-					Children:     make([]*types.NavItem, 0),
+					Title:    dirTitle,
+					Path:     urlPath,
+					IsDir:    true,
+					Children: make([]*types.NavItem, 0),
 				}
 				current.Children = append(current.Children, found)
 			}
@@ -220,7 +218,6 @@ func FilterNavigation(node *types.NavItem, allow func(path string) bool) *types.
 		Path:           node.Path,
 		IsDir:          node.IsDir,
 		IsActive:       node.IsActive,
-		IsAlwaysOpen:   node.IsAlwaysOpen,
 		DocumentLayout: node.DocumentLayout,
 		Children:       make([]*types.NavItem, 0),
 	}

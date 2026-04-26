@@ -77,7 +77,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	}
 
 	// Build navigation
-	nav, err := utils.BuildNavigation(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir, cfg.Wiki.AlwaysOpenChildrenInSidebar)
+	nav, err := utils.BuildNavigation(cfg.Wiki.RootDir, cfg.Wiki.DocumentsDir)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -105,10 +105,9 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 	navItem := utils.FindNavItem(nav, path)
 	if navItem == nil {
 		navItem = &types.NavItem{
-			Title:        utils.FormatDirName(filepath.Base(decodedPath)),
-			Path:         path,
-			IsDir:        true,
-			IsAlwaysOpen: cfg.Wiki.AlwaysOpenChildrenInSidebar,
+			Title: utils.FormatDirName(filepath.Base(decodedPath)),
+			Path:  path,
+			IsDir: true,
 		}
 	}
 
@@ -245,7 +244,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request, cfg *config.Config) {
 
 	// Prepare template data
 	data := &types.PageData{
-		Navigation:         nav,
+		Navigation:         &types.NavTree{Root: nav, AlwaysOpen: cfg.Wiki.AlwaysOpenChildrenInSidebar},
 		Content:            content,
 		DirContent:         dirContent,
 		Breadcrumbs:        breadcrumbs,
